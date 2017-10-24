@@ -32,6 +32,10 @@ Fortran programs for Markov chains.
 - poisson (poisson_mod.f90): pmf and rightbound of the Poisson distribution.
 - accerelation (quad_extrea_mod.f90): Acceleration algorithms (experimental).
 
+#### Integral
+
+- gaussinte (gaussinte_mod.f90): Integral with Gauss-Legendre quadrature.
+
 ### mexp directory
 
 #### Matrix exponential (general)
