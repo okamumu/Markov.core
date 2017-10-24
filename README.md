@@ -65,15 +65,21 @@ Fortran programs for Markov chains.
 - markovst_gs (markovst_gth_mod.f90): The stationary vector of dense and sparse CTMC kernels with Gauss-Seidel algorithm. This module depends on `spblas` and `gsstep`.
 - markovst_sor (markovst_sor_mod.f90): The stationary vector of dense and sparse CTMC kernels with SOR (successive over-relaxation) algorithm. This module depends on `spblas` and `gsstep`. (experimental)
 
+### inv directory
+
 #### Inverse matrix of the kernels of continuous-time Markov chain (CTMC)
 
 - markovinv_dgesv (markovinv_dgesv_mod.f90): The inverse of dense and sparse CTMC kernels with the dgesv routine for a dense matrix in the common BLAS. This depends on `sparse`.
 - markovinv_gs (markovinv_gs_mod.f90): The inverse of dense and sparse CTMC kernels with Gauss-Seidel algorithm. This module depends on `gsstep`.
 
+### stsen directory
+
 #### Sensitivity function of stationary vector of continuous-time Markov chain (CTMC)
 
 - markovstsen_dgesv (markovstsen_dgesv_mod.f90): The sensitivity function (the first derivative) of stationary vector for dense and sparse CTMC kernels with the dgesv routine for a dense matrix in the common BLAS. This depends on `sparse`.
 - markovstsen_gs (markovstsen_gs_mod.f90): The sensitivity function (the first derivative) of stationary vector for dense and sparse CTMC kernels with Gauss-Seidel algorithm. This module depends on `spblas` and `gsstep`.
+
+### qst directory
 
 #### Quasi-stationary vector of continuous-time Markov chain (CTMC): Experimental
 
