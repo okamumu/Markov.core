@@ -49,13 +49,13 @@ contains
         w(1) = 2.0d0
         return
       case (2)
-        x(1) = sqrt(1.0d0/3.0d0)
+        x(1) = -sqrt(1.0d0/3.0d0)
         w(1) = 1.0d0
         x(2) = -x(1)
         w(2) = w(1)
         return
       case (3)
-        x(1) = sqrt(0.6d0)
+        x(1) = -sqrt(0.6d0)
         w(1) = 5.0d0/9.0d0
         x(2) = 0.0d0
         w(2) = 8.0d0/9.0d0
@@ -99,7 +99,8 @@ contains
     end if
 
     do i = 1, m
-      x(n+1-i) = -x(i)
+      x(n+1-i) = x(i)
+      x(i) = -x(i) ! reverse order
       w(n+1-i) = w(i)
     end do
   end subroutine gaussinte_w
