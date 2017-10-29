@@ -48,29 +48,41 @@ contains
     double precision, intent(out) :: qv
     double precision, intent(in) :: spQ(base:base+nnz-1)
     double precision, intent(out) :: spP(base:base+nnz-1)
-    integer, intent(in) :: rowptr(base:*), colind(base:*)
+    integer, intent(in) :: rowptr(base:base+n), colind(base:base+nnz-1)
     integer :: i, j, z, diag(base:base+n-1)
 
-    qv = 0.0d0
-    do i = base, base+n-1
-      do z = rowptr(i), rowptr(i+1)-1
-        j = colind(z)
-        if (i == j) then
-          if (qv < -spQ(z)) then
-            qv = -spQ(z)
-          end if
-          diag(i) = z
-          exit
-        end if
-      end do
-    end do
-    qv = qv * ufact
+    qv = 1.0d0
+    spP(:) = 0.0d0
+    print*, 'unif_csr'
+    print*, 'n', n
+    print*, 'spQ', spQ(:)
+    print*, 'rowptr', rowptr(:)
+    print*, 'colind', colind(:)
+    print*, 'nnz', nnz
+    print*, 'spP', spP(:)
+    print*, 'qv', qv
+    print*, 'ufact', ufact
 
-    spP = spQ
-    call dscal(nnz, 1.0d0/qv, spP, 1)
-    do i = base, base+n-1
-      spP(diag(i)) = spP(diag(i)) + 1.0d0
-    end do
+    ! qv = 0.0d0
+    ! do i = base, base+n-1
+    !   do z = rowptr(i), rowptr(i+1)-1
+    !     j = colind(z)
+    !     if (i == j) then
+    !       if (qv < -spQ(z)) then
+    !         qv = -spQ(z)
+    !       end if
+    !       diag(i) = z
+    !       exit
+    !     end if
+    !   end do
+    ! end do
+    ! qv = qv * ufact
+    !
+    ! spP = spQ
+    ! call dscal(nnz, 1.0d0/qv, spP, 1)
+    ! do i = base, base+n-1
+    !   spP(diag(i)) = spP(diag(i)) + 1.0d0
+    ! end do
   end subroutine unif_csr
 
   subroutine unif_csc(n, spQ, colptr, rowind, nnz, spP, qv, ufact)
@@ -138,4 +150,3 @@ contains
   end subroutine unif_coo
 
 end module unif_matrix
-

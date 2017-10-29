@@ -349,4 +349,3 @@ contains
   end subroutine mexpint_unif_coo_mat
 
 end module mexpint_unif
-

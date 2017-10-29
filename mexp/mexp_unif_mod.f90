@@ -163,32 +163,51 @@ contains
     use spblas
     character, intent(in) :: trans
     integer, intent(in) :: n, nnz, left, right, m, ldx, ldy
-    double precision, intent(in) :: spP(1:*), qv, weight, poi(left:right), atol
-    integer, intent(in) :: rowptr(1:*), colind(1:*)
+    double precision, intent(in) :: spP(1:nnz), qv, weight, poi(left:right), atol
+    integer, intent(in) :: rowptr(1:n+1), colind(1:nnz)
     double precision, intent(in) :: x(1:ldx,1:m)
     double precision, intent(out) :: y(1:ldy,1:m)
 
-    integer :: j, k
-    double precision :: xi(1:n,1:m), tmp(1:n,1:m)
+    print*, 'mexp_unif_csr_mat'
+    print*, 'trans', trans
+    print*, 'n', n
+    print*, 'spP', spP(:)
+    print*, 'rowptr', rowptr(:)
+    print*, 'colind', colind(:)
+    print*, 'nnz', nnz
+    print*, 'qv', qv
+    print*, 'left', left
+    print*, 'right', right
+    print*, 'poi', poi(:)
+    print*, 'weight', weight
+    print*, 'm', m
+    print*, 'x', x(:,:)
+    print*, 'ldx', ldx
+    print*, 'y', y(:,:)
+    print*, 'ldy', ldy
+    print*, 'atol', atol
 
-    xi(1:n,1:m) = x(1:n,1:m)
-    y(1:n,1:m) = 0.0d0
-    do j = 1, m
-      call daxpy(n, poi(left), xi(1,j), 1, y(1,j), 1)
-    end do
-    do k = left+1, right
-      call dcopy(n*m, xi, 1, tmp, 1)
-      call dcsrmm(trans, 'N', n, m, n, 1.0d0, spP, rowptr, colind, nnz, tmp, n, 0.0d0, xi, n)
-      do j = 1, m
-        call daxpy(n, poi(k), xi(1,j), 1, y(1,j), 1)
-      end do
-      if (sum(xi) < atol) then
-        exit
-      end if
-    end do
-    do j = 1, m
-      call dscal(n, 1.0d0/weight, y(1,j), 1)
-    end do
+    ! integer :: j, k
+    ! double precision :: xi(1:n,1:m), tmp(1:n,1:m)
+
+    ! xi(1:n,1:m) = x(1:n,1:m)
+    ! y(1:n,1:m) = 0.0d0
+    ! do j = 1, m
+    !   call daxpy(n, poi(left), xi(1,j), 1, y(1,j), 1)
+    ! end do
+    ! do k = left+1, right
+    !   call dcopy(n*m, xi, 1, tmp, 1)
+    !   call dcsrmm(trans, 'N', n, m, n, 1.0d0, spP, rowptr, colind, nnz, tmp, n, 0.0d0, xi, n)
+    !   do j = 1, m
+    !     call daxpy(n, poi(k), xi(1,j), 1, y(1,j), 1)
+    !   end do
+    !   if (sum(xi) < atol) then
+    !     exit
+    !   end if
+    ! end do
+    ! do j = 1, m
+    !   call dscal(n, 1.0d0/weight, y(1,j), 1)
+    ! end do
   end subroutine mexp_unif_csr_mat
 
   subroutine mexp_unif_csc_mat(trans, n, spP, colptr, rowind, nnz, qv, &
@@ -258,4 +277,3 @@ contains
   end subroutine mexp_unif_coo_mat
 
 end module mexp_unif
-

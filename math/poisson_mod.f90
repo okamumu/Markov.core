@@ -91,25 +91,31 @@ contains
   function poisson_rightbound(lambda, eps) result(right)
     double precision, intent(in) :: lambda, eps
     integer :: right
-    
-    integer :: k
-    double precision :: z, tmp
-    double precision :: total
 
-    if (lambda < minlambda) then
-      tmp = exp(-lambda)
-      total = tmp
-      right = 0
-      do k = 1, rightmax
-        right = right + 1
-        tmp = tmp * lambda / right
-        total = total + tmp
-        if (total + eps >= 1.0d0) exit
-      end do
-    else
-      z = normalq(eps)
-      right =  floor((z + sqrt(4.0d0 * lambda - 1.0d0))**2 / 4.0d0 + 1.0d0)
-    end if
+    right = 9
+    print*, 'poi_right'
+    print*, 'lambda', lambda
+    print*, 'eps', eps
+    print*, 'right', right
+
+    ! integer :: k
+    ! double precision :: z, tmp
+    ! double precision :: total
+    !
+    ! if (lambda < minlambda) then
+    !   tmp = exp(-lambda)
+    !   total = tmp
+    !   right = 0
+    !   do k = 1, rightmax
+    !     right = right + 1
+    !     tmp = tmp * lambda / right
+    !     total = total + tmp
+    !     if (total + eps >= 1.0d0) exit
+    !   end do
+    ! else
+    !   z = normalq(eps)
+    !   right =  floor((z + sqrt(4.0d0 * lambda - 1.0d0))**2 / 4.0d0 + 1.0d0)
+    ! end if
   end function poisson_rightbound
 
   ! Description & parameters :
@@ -125,42 +131,50 @@ contains
     integer, intent(in) :: left, right
     double precision, intent(in) :: lambda
     double precision, intent(out) :: prob(left:right), weight
-    
-    ! work variables
-    integer :: mode, j, t, s
 
-    mode = floor(lambda)
-    if (mode >= 1) then
-     prob(mode) = exp(-lambda + real(mode, kind=8) * log(lambda) &
-      - log2piOver2 &
-      - (real(mode, kind=8) + 1.0d0/2.0d0) &
-      * log(real(mode, kind=8)) + real(mode, kind=8))
-    else
-      prob(mode) = exp(-lambda)
-    end if
-    ! -- down --
-    do j = mode, left+1, -1
-      prob(j-1) = (real(j, kind=8)/lambda)*prob(j)
-    end do
-    ! -- up --
-    do j = mode, right-1
-      prob(j+1) = (lambda/real(j+1, kind=8))*prob(j)
-    end do
-    ! -- compute W --
-    weight = 0.0
-    s = left
-    t = right
-    do while (s < t)
-      if (prob(s) <= prob(t)) then
-        weight = weight + prob(s)
-        s = s + 1
-      else
-        weight = weight + prob(t)
-        t = t - 1
-      end if
-    end do
-    weight = weight + prob(s)
+    weight = 1.0d0
+    prob(:) = 0.001d0
+    print*, 'poi_prob'
+    print*, 'lambda', lambda
+    print*, 'left', left
+    print*, 'right', right
+    print*, 'prob', prob(:)
+    print*, 'weight', weight
+
+    ! ! work variables
+    ! integer :: mode, j, t, s
+    !
+    ! mode = floor(lambda)
+    ! if (mode >= 1) then
+    !  prob(mode) = exp(-lambda + real(mode, kind=8) * log(lambda) &
+    !   - log2piOver2 &
+    !   - (real(mode, kind=8) + 1.0d0/2.0d0) &
+    !   * log(real(mode, kind=8)) + real(mode, kind=8))
+    ! else
+    !   prob(mode) = exp(-lambda)
+    ! end if
+    ! ! -- down --
+    ! do j = mode, left+1, -1
+    !   prob(j-1) = (real(j, kind=8)/lambda)*prob(j)
+    ! end do
+    ! ! -- up --
+    ! do j = mode, right-1
+    !   prob(j+1) = (lambda/real(j+1, kind=8))*prob(j)
+    ! end do
+    ! ! -- compute W --
+    ! weight = 0.0
+    ! s = left
+    ! t = right
+    ! do while (s < t)
+    !   if (prob(s) <= prob(t)) then
+    !     weight = weight + prob(s)
+    !     s = s + 1
+    !   else
+    !     weight = weight + prob(t)
+    !     t = t - 1
+    !   end if
+    ! end do
+    ! weight = weight + prob(s)
   end subroutine poisson_prob
 
 end module poisson
-
