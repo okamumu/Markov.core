@@ -1,68 +1,29 @@
-1 4 7 10 
-2 5 8 11 
-3 6 9 12 
-
-1 1 2 
-2 4 1 
-3 6 3 
-3 4 4 
-
-0 0 0 
-0 0 0 
-0 0 0 
-
-60 99 67 
-69 114 77 
-78 129 87 
-
-1 5 9 
-2 6 10 
-3 7 11 
-4 8 12 
-
-1 1 2 
-2 4 1 
-3 6 3 
-3 4 4 
-
-0 0 0 
-0 0 0 
-0 0 0 
-
-26 43 29 
-62 103 69 
-98 163 109 
-
-1 4 7 10 
-2 5 8 11 
-3 6 9 12 
-
-1 3 6 1 
-2 1 4 3 
-3 4 2 4 
-
-0 0 0 
-0 0 0 
-0 0 0 
-
-65 64 73 
-76 74 86 
-87 84 99 
-
-1 5 9 
-2 6 10 
-3 7 11 
-4 8 12 
-
-1 3 6 1 
-2 1 4 3 
-3 4 2 4 
-
-0 0 0 
-0 0 0 
-0 0 0 
-
-29 28 33 
-73 68 85 
-117 108 137 
-
+dcopy 1: true
+dcopy 2: true
+dgemv csr n: true
+dgemv csr t: true
+dgemv csr n inc=2: true
+dgemv csr t inc=2: true
+csr to dense: true
+dgemv csc n: true
+dgemv csc t: true
+dgemv csc n inc=2: true
+dgemv csc t inc=2: true
+csc to dense: true
+dgemv coo n: true
+dgemv coo t: true
+dgemv coo n inc=2: true
+dgemv coo t inc=2: true
+coo to dense: true
+dgemm csr n n: true
+dgemm csr t n: true
+dgemm csr n t: true
+dgemm csr t t: true
+dgemm csc n n: true
+dgemm csc t n: true
+dgemm csc n t: true
+dgemm csc t t: true
+dgemm coo n n: true
+dgemm coo t n: true
+dgemm coo n t: true
+dgemm coo t t: true

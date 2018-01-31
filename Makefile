@@ -1,6 +1,7 @@
 # Makefile
 
 CXX = g++
+# CXXFLAGS = --std=c++11 -fPIC -g -Wall -I include -DF77BLAS -DF77LAPACK -DDEBUG
 CXXFLAGS = --std=c++11 -fPIC -g -Wall -I include -DF77BLAS -DF77LAPACK
 LDFLAGS = -lblas -llapack
 

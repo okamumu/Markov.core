@@ -4,33 +4,34 @@
  */
 
 namespace dblas {
+  // utils
+
+  int nnz(int m, int n, const double *A, int lda);
 
   // level 1
-  void dcopy(const int n, const double *x, const int incx, double *y, const int incy);
-  void dscal(const int n, const double alpha, double *x, const int incx);
-  void daxpy(const int n, const double alpha, const double *x, const int incx,
-    double *y, const int incy);
+  void dcopy(int n, const double *x, int incx, double *y, int incy);
+  void dscal(int n, double alpha, double *x, int incx);
+  void daxpy(int n, double alpha, const double *x, int incx, double *y, int incy);
 
-  double ddot(const int n, const double *x, const int incx,
-    const double *y, const int incy);
-  double dasum(const int n, const double *x, const int incx);
-  double dnrm2(const int n, const double *x, const int incx);
-  const double* idamax(const int n, const double *x, const int incx);
+  double ddot(int n, const double *x, int incx, const double *y, int incy);
+  double dasum(int n, const double *x, int incx);
+  double dnrm2(int n, const double *x, int incx);
+  // const double* idamax(int n, const double *x, int incx);
 
   // level 2
-  void dgemv(const char& trans, const int m, const int n, const double alpha,
-    const double *A, const int lda, const double *x, const int incx,
-    const double beta, double *y, const int incy);
+  void dgemv(char trans, int m, int n, double alpha,
+    const double *A, int lda, const double *x, int incx,
+    double beta, double *y, int incy);
 
-  void dger(const int m, const int n, const double alpha,
-    const double *x, const int incx, const double *y, const int incy,
-    double *A, const int lda);
+  void dger(int m, int n, double alpha,
+    const double *x, int incx, const double *y, int incy,
+    double *A, int lda);
 
   // level 3
-  void dgemm(const char& transA, const char& transB,
-    const int m, const int n, const int k, const double alpha,
-    const double *A, const int lda, const double *B, const int ldb,
-    const double beta, double *C, const int ldc);
+  void dgemm(char transA, char transB,
+    int m, int n, int k, double alpha,
+    const double *A, int lda, const double *B, int ldb,
+    double beta, double *C, int ldc);
 
   // use for f77blas
   #ifdef F77BLAS
@@ -100,7 +101,7 @@ namespace dblas {
    * @param incy increment of index of vector y
    */
 
-  inline void dcopy(const int n, const double *x, const int incx, double *y, const int incy) {
+  inline void dcopy(int n, const double *x, int incx, double *y, int incy) {
     __DCOPY__(&n, x, &incx, y, &incy);
   }
 
@@ -112,7 +113,7 @@ namespace dblas {
     * @param incx increment of index of vector x
     */
 
-  inline void dscal(const int n, const double alpha, double *x, const int incx) {
+  inline void dscal(int n, double alpha, double *x, int incx) {
     __DSCAL__(&n, &alpha, x, &incx);
   }
 
@@ -125,8 +126,7 @@ namespace dblas {
    * @param incy increment of index of vector y
    */
 
-  inline void daxpy(const int n, const double alpha, const double *x, const int incx,
-    double *y, const int incy) {
+  inline void daxpy(int n, double alpha, const double *x, int incx, double *y, int incy) {
     __DAXPY__(&n, &alpha, x, &incx, y, &incy);
   }
 
@@ -140,8 +140,7 @@ namespace dblas {
    * @return a dot product of x and y
    */
 
-  inline double ddot(const int n, const double *x, const int incx,
-    const double *y, const int incy) {
+  inline double ddot(int n, const double *x, int incx, const double *y, int incy) {
     return __DDOT__(&n, x, &incx, y, &incy);
   }
 
@@ -153,7 +152,7 @@ namespace dblas {
    * @return a l2norm of x
    */
 
-  inline double dasum(const int n, const double *x, const int incx) {
+  inline double dasum(int n, const double *x, int incx) {
     return __DASUM__(&n, x, &incx);
   }
 
@@ -165,7 +164,7 @@ namespace dblas {
    * @return a l2norm of x
    */
 
-  inline double dnrm2(const int n, const double *x, const int incx) {
+  inline double dnrm2(int n, const double *x, int incx) {
     return __DNRM2__(&n, x, &incx);
   }
 
@@ -192,15 +191,15 @@ namespace dblas {
   // }
   //
 
-  inline const double* idamax(const int n, const double *x, const int incx) {
-    const double* max = x;
-    for (int i=0; i<n; i++, x+=incx) {
-      if (fabs(*x) > fabs(*max)) {
-        max = x;
-      }
-    }
-    return max;
-  }
+  // inline const double* idamax(const int n, const double *x, const int incx) {
+  //   const double* max = x;
+  //   for (int i=0; i<n; i++, x+=incx) {
+  //     if (fabs(*x) > fabs(*max)) {
+  //       max = x;
+  //     }
+  //   }
+  //   return max;
+  // }
 
   // level 2
 
@@ -219,9 +218,9 @@ namespace dblas {
     * @param incy increment of index of vector y
     */
 
-  inline void dgemv(const char& trans, const int m, const int n, const double alpha,
-    const double *A, const int lda, const double *x, const int incx,
-    const double beta, double *y, const int incy) {
+  inline void dgemv(char trans, int m, int n, double alpha,
+    const double *A, int lda, const double *x, int incx,
+    double beta, double *y, int incy) {
     __DGEMV__(&trans, &m, &n, &alpha, A, &lda, x, &incx, &beta, y, &incy);
   }
 
@@ -238,9 +237,9 @@ namespace dblas {
     * @param lda length of column data of matrix A
     */
 
-  inline void dger(const int m, const int n, const double alpha,
-    const double *x, const int incx, const double *y, const int incy,
-    double *A, const int lda) {
+  inline void dger(int m, int n, double alpha,
+    const double *x, int incx, const double *y, int incy,
+    double *A, int lda) {
     __DGER__(&m, &n, &alpha, x, &incx, y, &incy, A, &lda);
   }
 
@@ -262,10 +261,23 @@ namespace dblas {
     * @param ldc length of column data of matrix C
     */
 
-  inline void dgemm(const char& transA, const char& transB,
-    const int m, const int n, const int k, const double alpha,
-    const double *A, const int lda, const double *B, const int ldb,
-    const double beta, double *C, const int ldc) {
+  inline void dgemm(char transA, char transB,
+    int m, int n, int k, double alpha,
+    const double *A, int lda, const double *B, int ldb,
+    double beta, double *C, int ldc) {
     __DGEMM__(&transA, &transB, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
   }
+
+  inline int nnz(int m, int n, const double *A, int lda) {
+    int z = 0;
+    for (int j=0; j<n; j++) {
+      for (int i=0; i<m; i++) {
+        if (A[i+j*lda] != 0) {
+          z++;
+        }
+      }
+    }
+    return z;
+  }
+
 }
