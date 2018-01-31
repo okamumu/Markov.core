@@ -7,7 +7,7 @@ namespace marlib {
   template <typename VectorT>
   class dense_matrix {
 
-  using iterator = double*;
+  using iterator = VectorT;
 
   public:
     dense_matrix(int nrow, int ncol, VectorT v)
@@ -27,8 +27,8 @@ namespace marlib {
     double& operator[](int i) { return m_value[i]; };
     const double& operator[](int i) const { return m_value[i]; };
 
-    iterator begin() { return &m_value[0]; }
-    iterator end() { return &m_value[0] + m_size; }
+    iterator begin() { return m_value; }
+    iterator end() { return m_value + m_size; }
     const iterator begin() const { return m_value; }
     const iterator end() const { return m_value + m_size; }
 

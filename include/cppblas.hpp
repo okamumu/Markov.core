@@ -30,9 +30,9 @@ namespace marlib {
 
   // dcopy
 
-  template <typename VectorT>
+  template <typename VectorT, typename VectorT2>
   inline
-  VectorT& dcopy(const VectorT& x, VectorT& y) {
+  VectorT2& dcopy(const VectorT& x, VectorT2& y) {
     dblas::dcopy(x.size(), &x[0], 1, &y[0], 1);
     return y;
   }
