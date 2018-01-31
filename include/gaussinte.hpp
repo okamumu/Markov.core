@@ -29,35 +29,35 @@ namespace marlib {
 !     return value: the interal value
 */
 
-  template <typename VectorT>
+  template <typename ValueT>
   class gaussinte {
   public:
-    gaussinte(int n, const VectorT& x, const VectorT& w, double eps);
+    gaussinte(int n, ValueT* x, ValueT* w, ValueT eps);
 
-    double comp_fx(double a, double b, VectorT fx) const;
-    double comp_value(double c, VectorT fv) const;
-    VectorT get_w() const;
+    ValueT comp_fx(ValueT a, ValueT b, ValueT* fx) const;
+    ValueT comp_value(ValueT c, const ValueT* fv) const;
+    const ValueT* get_w() const;
     int get_n() const { return m_n; }
 
   private:
     int m_n;
-    VectorT m_x;
-    VectorT m_w;
+    ValueT* m_x;
+    ValueT* m_w;
 
-    void comp_w(double eps);
+    void comp_w(ValueT eps);
   };
 
   /// methods
 
-  template <typename VectorT>
-  gaussinte<VectorT>::gaussinte(int n, const VectorT& x, const VectorT& w, double eps)
+  template <typename ValueT>
+  gaussinte<ValueT>gaussinte(int n, ValueT* x, ValueT* w, ValueT eps)
   : m_n(n), m_x(x), m_w(w) {
       comp_w(eps);
   }
 
-  template <typename VectorT>
-  void gaussinte<VectorT>::comp_w(double eps) {
-    constexpr double pai = 3.14159265358979324;
+  template <typename ValueT>
+  void gaussinte<ValueT>comp_w(ValueT eps) {
+    constexpr ValueT pai = 3.14159265358979324;
     switch (m_n) {
       case 1:
         m_x[0] = 0.0;
@@ -79,11 +79,11 @@ namespace marlib {
         return;
     }
     int m = m_n / 2;
-    double npai = pai / (m_n + 0.5);
-    double p0, p1, p2, q0, q1, q2;
+    ValueT npai = pai / (m_n + 0.5);
+    ValueT p0, p1, p2, q0, q1, q2;
     for (int i=1; i<=m; i++) {
-      double tmp = std::cos((i - 0.25) * npai);
-      double dt = tmp;
+      ValueT tmp = std::cos((i - 0.25) * npai);
+      ValueT dt = tmp;
       while (std::abs(dt) > std::abs(tmp) * eps) {
         p1 = tmp;
         p2 = (3.0 * tmp * tmp - 1.0) * 0.5;
@@ -105,7 +105,7 @@ namespace marlib {
     }
 
     if (m_n % 2 == 1) {
-      double tmp = m_n;
+      ValueT tmp = m_n;
       for (int i=1; i<=m; i++) {
         tmp = tmp * (0.5 - i) / i;
       }
@@ -120,24 +120,24 @@ namespace marlib {
     }
   }
 
-  template <typename VectorT>
-  VectorT gaussinte<VectorT>::get_w() const {
+  template <typename ValueT>
+  const ValueT* gaussinte<ValueT>get_w() const {
       return m_w;
   }
 
-  template <typename VectorT>
-  double gaussinte<VectorT>::comp_fx(double a, double b, VectorT fx) const {
-    double t1 = (b - a)/2;
-    double t2 = (b + a)/2;
+  template <typename ValueT>
+  ValueT gaussinte<ValueT>comp_fx(ValueT a, ValueT b, ValueT* fx) const {
+    ValueT t1 = (b - a)/2;
+    ValueT t2 = (b + a)/2;
     for (int i=0; i<m_n; i++) {
       fx[i] = t1 * m_x[i] + t2;
     }
     return t1;
   }
 
-  template <typename VectorT>
-  double gaussinte<VectorT>::comp_value(double c, VectorT fv) const {
-    double s = 0;
+  template <typename ValueT>
+  ValueT gaussinte<ValueT>comp_value(ValueT c, ValueT* fv) const {
+    ValueT s = 0;
     for (int i=0; i<m_n; i++) {
       s += m_w[i] * fv[i];
     }

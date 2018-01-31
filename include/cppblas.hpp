@@ -15,25 +15,32 @@ namespace marlib {
     return x;
   }
 
+  // inc
+  template <typename VectorT>
+  inline
+  int inc(const VectorT& x) {
+    return 1;
+  }
+
+  // ld
+  template <typename MatrixT>
+  inline
+  int ld(const Matrix& x) {
+    return x.nrow();
+  }
+
   // nnz
   template <typename MatrixT>
   inline
   int nnz(const MatrixT& m) {
-    int z = 0;
-    for (auto xptr = m.begin(); xptr != m.end(); xptr++) {
-      if (*xptr != 0) {
-        z++;
-      }
-    }
-    return z;
+    return dblas::nnz(m.nrow(), m.ncol(), &m[0], lda(m));
   }
 
   // dcopy
-
   template <typename VectorT, typename VectorT2>
   inline
   VectorT2& dcopy(const VectorT& x, VectorT2& y) {
-    dblas::dcopy(x.size(), &x[0], 1, &y[0], 1);
+    dblas::dcopy(x.size(), &x[0], inc(x), &y[0], inc(y));
     return y;
   }
 
@@ -44,7 +51,7 @@ namespace marlib {
   template <typename VectorT>
   inline
   VectorT& daxpy(double alpha, const VectorT& x, VectorT& y) {
-    dblas::daxpy(x.size(), alpha, &x[0], 1, &y[0], 1);
+    dblas::daxpy(x.size(), alpha, &x[0], inc(x), &y[0], inc(y));
     return y;
   }
 
@@ -53,7 +60,7 @@ namespace marlib {
   template <typename VectorT>
   inline
   VectorT& dscal(double alpha, VectorT& x) {
-    dblas::dscal(x.size(), alpha, &x[0], 1);
+    dblas::dscal(x.size(), alpha, &x[0], inc(x));
     return x;
   }
 
@@ -62,7 +69,7 @@ namespace marlib {
   template <typename VectorT>
   inline
   double dasum(const VectorT& x) {
-    return dblas::dasum(x.size(), &x[0], 1);
+    return dblas::dasum(x.size(), &x[0], inc(x));
   }
 
   // BLAS level 2
@@ -72,14 +79,14 @@ namespace marlib {
   template <typename VectorT, typename MatrixT>
   inline
   VectorT& dgemvN(double alpha, const MatrixT& A, const VectorT& x, double beta, VectorT& y) {
-    dblas::dgemv('N', A.nrow(), A.ncol(), alpha, &A[0], A.nrow(), &x[0], 1, beta, &y[0], 1);
+    dblas::dgemv('N', A.nrow(), A.ncol(), alpha, &A[0], ld(A), &x[0], inc(x), beta, &y[0], inc(y));
     return y;
   }
 
   template <typename VectorT, typename MatrixT>
   inline
   VectorT& dgemvT(double alpha, const MatrixT& A, const VectorT& x, double beta, VectorT& y) {
-    dblas::dgemv('T', A.nrow(), A.ncol(), alpha, &A[0], A.nrow(), &x[0], 1, beta, &y[0], 1);
+    dblas::dgemv('T', A.nrow(), A.ncol(), alpha, &A[0], ld(A), &x[0], inc(x), beta, &y[0], inc(y));
     return y;
   }
 
@@ -108,32 +115,32 @@ namespace marlib {
   template <typename MatrixT, typename MatrixT2>
   inline
   MatrixT& dgemmNN(double alpha, const MatrixT2& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dgemm('N', 'N', C.nrow(), C.ncol(), A.ncol(), alpha, &A[0], A.nrow(), &B[0], B.nrow(),
-      beta, &C[0], C.nrow());
+    dblas::dgemm('N', 'N', C.nrow(), C.ncol(), A.ncol(), alpha, &A[0], ld(A), &B[0], ld(B),
+      beta, &C[0], ld(C));
     return C;
   }
 
   template <typename MatrixT, typename MatrixT2>
   inline
   MatrixT& dgemmNT(double alpha, const MatrixT2& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dgemm('N', 'T', C.nrow(), C.ncol(), A.ncol(), alpha, &A[0], A.nrow(), &B[0], B.nrow(),
-      beta, &C[0], C.nrow());
+    dblas::dgemm('N', 'T', C.nrow(), C.ncol(), A.ncol(), alpha, &A[0], ld(A), &B[0], ld(B),
+      beta, &C[0], ld(C));
     return C;
   }
 
   template <typename MatrixT, typename MatrixT2>
   inline
   MatrixT& dgemmTN(double alpha, const MatrixT2& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dgemm('T', 'N', C.nrow(), C.ncol(), A.nrow(), alpha, &A[0], A.nrow(), &B[0], B.nrow(),
-      beta, &C[0], C.nrow());
+    dblas::dgemm('T', 'N', C.nrow(), C.ncol(), A.nrow(), alpha, &A[0], ld(A), &B[0], ld(B),
+      beta, &C[0], ld(C));
     return C;
   }
 
   template <typename MatrixT, typename MatrixT2>
   inline
   MatrixT& dgemmTT(double alpha, const MatrixT2& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dgemm('T', 'T', C.nrow(), C.ncol(), A.nrow(), alpha, &A[0], A.nrow(), &B[0], B.nrow(),
-      beta, &C[0], C.nrow());
+    dblas::dgemm('T', 'T', C.nrow(), C.ncol(), A.nrow(), alpha, &A[0], ld(A), &B[0], ld(B),
+      beta, &C[0], ld(C));
     return C;
   }
 
@@ -167,75 +174,6 @@ namespace marlib {
   //   return dgemvT(alpha, A, B, beta, C);
   // }
 
-// #ifdef F77BLAS
-//   template <>
-//   inline
-//   dense_matrix<double>& dgemm(
-//     const trans_t& transA,
-//     const trans_t& transB,
-//     const double alpha,
-//     const dense_matrix<double>& A,
-//     const dense_matrix<double>& B,
-//     const double beta,
-//     dense_matrix<double>& C) {
-//       switch (transA) {
-//         case NoTrans:
-//         switch (transB) {
-//           case NoTrans:
-//           assert(C.nrow() == A.nrow() && C.ncol() == B.ncol() && A.ncol() == B.nrow());
-//           dblas::dgemm(transA, transB, C.nrow(), C.ncol(), A.ncol(), alpha, A.ptr(), A.ld(), B.ptr(), B.ld(), beta, C.ptr(), C.ld());
-//           break;
-//           case Trans:
-//           assert(C.nrow() == A.nrow() && C.ncol() == B.nrow() && A.ncol() == B.ncol());
-//           dblas::dgemm(transA, transB, C.nrow(), C.ncol(), A.ncol(), alpha, A.ptr(), A.ld(), B.ptr(), B.ld(), beta, C.ptr(), C.ld());
-//           break;
-//         }
-//         break;
-//         case Trans:
-//         switch (transB) {
-//           case NoTrans:
-//           assert(C.nrow() == A.ncol() && C.ncol() == B.ncol() && A.nrow() == B.nrow());
-//           dblas::dgemm(transA, transB, C.nrow(), C.ncol(), A.nrow(), alpha, A.ptr(), A.ld(), B.ptr(), B.ld(), beta, C.ptr(), C.ld());
-//           break;
-//           case Trans:
-//           assert(C.nrow() == A.ncol() && C.ncol() == B.nrow() && A.nrow() == B.ncol());
-//           dblas::dgemm(transA, transB, C.nrow(), C.ncol(), A.nrow(), alpha, A.ptr(), A.ld(), B.ptr(), B.ld(), beta, C.ptr(), C.ld());
-//           break;
-//         }
-//         break;
-//       }
-//     return C;
-//   }
-// #endif
-//
-// // dgemm for vector
-//
-// template <typename ValueT>
-// inline
-// vector<ValueT>& dgemm(
-//   const trans_t& transA,
-//   const trans_t& transB,
-//   const ValueT alpha,
-//   const dense_matrix<ValueT>& A,
-//   const vector<ValueT>& B,
-//   const ValueT beta,
-//   vector<ValueT>& C) {
-//   return dgemv<ValueT>(transA, alpha, A, B, beta, C);
-// }
-//
-// template <typename ValueT>
-// inline
-// vector<ValueT>& dgemm(
-//   const trans_t& transA,
-//   const trans_t& transB,
-//   const ValueT alpha,
-//   const csr_matrix<ValueT>& A,
-//   const vector<ValueT>& B,
-//   const ValueT beta,
-//   vector<ValueT>& C) {
-//   return dgemv<ValueT>(transA, alpha, A, B, beta, C);
-// }
-//
 //   // lapack
 //
 //   // dgesv: solve A X = B
