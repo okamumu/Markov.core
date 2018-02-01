@@ -4,11 +4,8 @@
  */
 
 namespace dblas {
-  // utils
-
-  int nnz(int m, int n, const double *A, int lda);
-
   // level 1
+  void dfill(int n, double *x, int incx, double alpha);
   void dcopy(int n, const double *x, int incx, double *y, int incy);
   void dscal(int n, double alpha, double *x, int incx);
   void daxpy(int n, double alpha, const double *x, int incx, double *y, int incy);
@@ -16,7 +13,19 @@ namespace dblas {
   double ddot(int n, const double *x, int incx, const double *y, int incy);
   double dasum(int n, const double *x, int incx);
   double dnrm2(int n, const double *x, int incx);
+  double damax(int n, const double *x, int incx);
   // const double* idamax(int n, const double *x, int incx);
+
+  // for matrix
+  int dnnz(int m, int n, const double *A, int lda);
+  void dfill(int m, int n, double *A, int lda, double alpha);
+  void dcopy(int m, int n, const double *A, int lda, double *B, int ldb);
+  void dscal(int m, int n, double alpha, double *A, int lda);
+  void daxpy(int m, int n, double alpha, const double *A, int lda, double *B, int ldb);
+  double ddot(int m, int n, const double *A, int lda, const double *B, int ldb);
+  double dasum(int m, int n, const double *A, int lda);
+  double dnrm2(int m, int n, const double *A, int lda);
+  double damax(int m, int n, const double *A, int lda);
 
   // level 2
   void dgemv(char trans, int m, int n, double alpha,
@@ -91,6 +100,13 @@ namespace dblas {
   #endif
 
   // level 1
+
+  inline
+  void dfill(int n, double *x, int incx, double alpha) {
+    for (int i=0; i<n; i++, x+=incx) {
+      *x = alpha;
+    }
+  }
 
   /*
    * copy from x to y
@@ -176,30 +192,17 @@ namespace dblas {
   //   }
   //   return sum;
   // }
-  //
-  // int blas_idmax(int n, const double *x, int incx) {
-  //   int i, id;
-  //   double max = *x;
-  //   id = 0;
-  //   for (i=0; i<n; i++, x+=incx) {
-  //     if (*x > max) {
-  //       max = *x;
-  //       id = i;
-  //     }
-  //   }
-  //   return id;
-  // }
-  //
 
-  // inline const double* idamax(const int n, const double *x, const int incx) {
-  //   const double* max = x;
-  //   for (int i=0; i<n; i++, x+=incx) {
-  //     if (fabs(*x) > fabs(*max)) {
-  //       max = x;
-  //     }
-  //   }
-  //   return max;
-  // }
+  inline
+  double damax(int n, const double *x, int incx) {
+    double max = 0;
+    for (int i=0; i<n; i++, x+=incx) {
+      if (*x > max) {
+        max = *x;
+      }
+    }
+    return max;
+  }
 
   // level 2
 
@@ -268,7 +271,9 @@ namespace dblas {
     __DGEMM__(&transA, &transB, &m, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc);
   }
 
-  inline int nnz(int m, int n, const double *A, int lda) {
+  // for matrix
+
+  inline int dnnz(int m, int n, const double *A, int lda) {
     int z = 0;
     for (int j=0; j<n; j++) {
       for (int i=0; i<m; i++) {
@@ -279,5 +284,77 @@ namespace dblas {
     }
     return z;
   }
+
+  inline
+  void dfill(int m, int n, double *A, int lda, double alpha) {
+    double* Aptr = A;
+    for (int j=0; j<n; j++, Aptr+=lda) {
+      for (int i=0; i<m; i++) {
+        Aptr[i] = alpha;
+      }
+    }
+  }
+
+  inline
+  void dcopy(int m, int n, const double *A, int lda, double *B, int ldb) {
+    for (int i=0; i<n; i++, A+=lda, B+=ldb) {
+      dcopy(m, A, 1, B, 1);
+    }
+  }
+
+  inline
+  void dscal(int m, int n, double alpha, double *A, int lda) {
+    for (int i=0; i<n; i++, A+=lda) {
+      dscal(m, alpha, A, 1);
+    }
+  }
+
+  inline
+  void daxpy(int m, int n, double alpha, const double *A, int lda, double *B, int ldb) {
+    for (int i=0; i<n; i++, A+=lda, B+=ldb) {
+      daxpy(m, alpha, A, 1, B, 1);
+    }
+  }
+
+  inline
+  double ddot(int m, int n, const double *A, int lda, const double *B, int ldb) {
+    double tmp = 0;
+    for (int i=0; i<n; i++, A+=lda, B+=ldb) {
+      tmp += ddot(m, A, 1, B, 1);
+    }
+    return tmp;
+  }
+
+  inline
+  double dasum(int m, int n, const double *A, int lda) {
+    double tmp = 0;
+    for (int i=0; i<n; i++, A+=lda) {
+      tmp += dasum(m, A, 1);
+    }
+    return tmp;
+  }
+
+  inline
+  double dnrm2(int m, int n, const double *A, int lda) {
+    double sum = 0;
+    for (int i=0; i<n; i++, A+=lda) {
+      double tmp = dnrm2(m, A, 1);
+      sum += tmp * tmp;
+    }
+    return std::sqrt(sum);
+  }
+
+  inline
+  double damax(int m, int n, const double *A, int lda) {
+    double max = 0;
+    for (int i=0; i<n; i++, A+=lda) {
+      double tmp = damax(m, A, 1);
+      if (tmp > max) {
+        max = tmp;
+      }
+    }
+    return max;
+  }
+
 
 }

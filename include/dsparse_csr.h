@@ -26,12 +26,7 @@ namespace dblas {
   void csr_to_dense(int m, int n,
     const double *spA, const int *rowptr, const int *colind, int nnz, int origin,
     double *A, int lda) {
-    double* Aptr = A;
-    for (int j=0; j<n; j++, Aptr+=lda) {
-      for (int i=0; i<m; i++) {
-        Aptr[i] = 0;
-      }
-    }
+    dfill(m, n, A, lda, 0);
     for (int i=0; i<m; i++, A+=1) {
       for (int z=rowptr[i]-origin; z<rowptr[i+1]-origin; z++) {
         int j = colind[z] - origin;
@@ -80,10 +75,7 @@ namespace dblas {
   inline void dcsrmmNN(int m, int n, int k, double alpha,
     const double *A, const int *rowptr, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int i=0; i<m; i++) {
       for (int z=rowptr[i]-origin; z<rowptr[i+1]-origin; z++) {
         int j = colind[z] - origin;
@@ -99,10 +91,7 @@ namespace dblas {
   inline void dcsrmmTN(int m, int n, int k, double alpha,
     const double *A, const int *rowptr, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int i=0; i<k; i++) {
       for (int z=rowptr[i]-origin; z<rowptr[i+1]-origin; z++) {
         int j = colind[z] - origin;
@@ -118,10 +107,7 @@ namespace dblas {
   inline void dcsrmmNT(int m, int n, int k, double alpha,
     const double *A, const int *rowptr, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int i=0; i<m; i++) {
       for (int z=rowptr[i]-origin; z<rowptr[i+1]-origin; z++) {
         int j = colind[z] - origin;
@@ -137,10 +123,7 @@ namespace dblas {
   inline void dcsrmmTT(int m, int n, int k, double alpha,
     const double *A, const int *rowptr, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int i=0; i<k; i++) {
       for (int z=rowptr[i]-origin; z<rowptr[i+1]-origin; z++) {
         int j = colind[z] - origin;

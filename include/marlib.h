@@ -6,7 +6,10 @@
 #include <iostream>
 
 #include "dblas.h"
-#include "dsparse.h"
+#include "dsparse_csr.h"
+#include "dsparse_csc.h"
+#include "dsparse_coo.h"
+
 #include "cppblas.hpp"
 
 #include "poisson.hpp"

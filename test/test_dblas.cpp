@@ -129,7 +129,7 @@ void test_dgemv_csr() {
   int ld = 4;
   print_matrix(m, n, a, ld);
 
-  int nz = nnz(m, n, a, ld);
+  int nz = dnnz(m, n, a, ld);
   int origin = 1;
   double spa[nz];
   int rowptr[m+1];
@@ -204,7 +204,7 @@ void test_dgemv_csc() {
   int ld = 4;
   print_matrix(m, n, a, ld);
 
-  int nz = nnz(m, n, a, ld);
+  int nz = dnnz(m, n, a, ld);
   int origin = 1;
   double spa[nz];
   int rowptr[n+1];
@@ -279,7 +279,7 @@ void test_dgemv_coo() {
   int ld = 4;
   print_matrix(m, n, a, ld);
 
-  int nz = nnz(m, n, a, ld);
+  int nz = dnnz(m, n, a, ld);
   int origin = 1;
   double spa[nz];
   int rowptr[nz];
@@ -369,7 +369,7 @@ void test_dgemm_csr() {
   double y2[size];
 
   print_matrix(m, k, a, ld);
-  nz = nnz(m, k, a, ld);
+  nz = dnnz(m, k, a, ld);
   dense_to_csr(m, k, a, ld, spa, rowptr, colind, nz, origin);
   print_csr_matrix(m, k, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -386,7 +386,7 @@ void test_dgemm_csr() {
   std::cout << check_equal("dgemm csr n n", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(k, m, a, ld);
-  nz = nnz(k, m, a, ld);
+  nz = dnnz(k, m, a, ld);
   dense_to_csr(k, m, a, ld, spa, rowptr, colind, nz, origin);
   print_csr_matrix(k, m, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -403,7 +403,7 @@ void test_dgemm_csr() {
   std::cout << check_equal("dgemm csr t n", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(m, k, a, ld);
-  nz = nnz(m, k, a, ld);
+  nz = dnnz(m, k, a, ld);
   dense_to_csr(m, k, a, ld, spa, rowptr, colind, nz, origin);
   print_csr_matrix(m, k, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -420,7 +420,7 @@ void test_dgemm_csr() {
   std::cout << check_equal("dgemm csr n t", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(k, m, a, ld);
-  nz = nnz(k, m, a, ld);
+  nz = dnnz(k, m, a, ld);
   dense_to_csr(k, m, a, ld, spa, rowptr, colind, nz, origin);
   print_csr_matrix(k, m, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -466,7 +466,7 @@ void test_dgemm_csc() {
   double y2[size];
 
   print_matrix(m, k, a, ld);
-  nz = nnz(m, k, a, ld);
+  nz = dnnz(m, k, a, ld);
   dense_to_csc(m, k, a, ld, spa, rowptr, colind, nz, origin);
   print_csc_matrix(m, k, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -483,7 +483,7 @@ void test_dgemm_csc() {
   std::cout << check_equal("dgemm csc n n", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(k, m, a, ld);
-  nz = nnz(k, m, a, ld);
+  nz = dnnz(k, m, a, ld);
   dense_to_csc(k, m, a, ld, spa, rowptr, colind, nz, origin);
   print_csc_matrix(k, m, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -500,7 +500,7 @@ void test_dgemm_csc() {
   std::cout << check_equal("dgemm csc t n", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(m, k, a, ld);
-  nz = nnz(m, k, a, ld);
+  nz = dnnz(m, k, a, ld);
   dense_to_csc(m, k, a, ld, spa, rowptr, colind, nz, origin);
   print_csc_matrix(m, k, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -517,7 +517,7 @@ void test_dgemm_csc() {
   std::cout << check_equal("dgemm csc n t", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(k, m, a, ld);
-  nz = nnz(k, m, a, ld);
+  nz = dnnz(k, m, a, ld);
   dense_to_csc(k, m, a, ld, spa, rowptr, colind, nz, origin);
   print_csc_matrix(k, m, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -563,7 +563,7 @@ void test_dgemm_coo() {
   double y2[size];
 
   print_matrix(m, k, a, ld);
-  nz = nnz(m, k, a, ld);
+  nz = dnnz(m, k, a, ld);
   dense_to_coo(m, k, a, ld, spa, rowptr, colind, nz, origin);
   print_coo_matrix(m, k, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -580,7 +580,7 @@ void test_dgemm_coo() {
   std::cout << check_equal("dgemm coo n n", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(k, m, a, ld);
-  nz = nnz(k, m, a, ld);
+  nz = dnnz(k, m, a, ld);
   dense_to_coo(k, m, a, ld, spa, rowptr, colind, nz, origin);
   print_coo_matrix(k, m, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -597,7 +597,7 @@ void test_dgemm_coo() {
   std::cout << check_equal("dgemm coo t n", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(m, k, a, ld);
-  nz = nnz(m, k, a, ld);
+  nz = dnnz(m, k, a, ld);
   dense_to_coo(m, k, a, ld, spa, rowptr, colind, nz, origin);
   print_coo_matrix(m, k, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);
@@ -614,7 +614,7 @@ void test_dgemm_coo() {
   std::cout << check_equal("dgemm coo n t", size, y1, 1, y2, 1) << std::endl;
 
   print_matrix(k, m, a, ld);
-  nz = nnz(k, m, a, ld);
+  nz = dnnz(k, m, a, ld);
   dense_to_coo(k, m, a, ld, spa, rowptr, colind, nz, origin);
   print_coo_matrix(k, m, spa, rowptr, colind, nz, origin);
   dcopy(size, b, 1, x, 1);

@@ -4,33 +4,22 @@
 
 namespace marlib {
 
-  template <typename VectorT>
   class dense_matrix {
 
-  using iterator = VectorT;
-
   public:
-    dense_matrix(int nrow, int ncol, VectorT v)
+    dense_matrix(int nrow, int ncol, double* v)
     : m_size(nrow*ncol), m_row(nrow), m_col(ncol), m_value(v) {}
-    dense_matrix(const dense_matrix<VectorT>& m)
-    : m_size(m.m_size), m_row(m.m_row), m_col(m.m_col), m_value(m.m_value) {}
-
     ~dense_matrix() {}
 
   private:
     int m_size;
     int m_row;
     int m_col;
-    VectorT m_value;
+    double* m_value;
 
   public:
     double& operator[](int i) { return m_value[i]; };
     const double& operator[](int i) const { return m_value[i]; };
-
-    iterator begin() { return m_value; }
-    iterator end() { return m_value + m_size; }
-    const iterator begin() const { return m_value; }
-    const iterator end() const { return m_value + m_size; }
 
     int size() const { return m_size; }
     int nrow() const { return m_row; }
@@ -47,12 +36,11 @@ namespace marlib {
       return os;
     }
 
-    template <typename VectorTT>
-    friend std::ostream& operator<< (std::ostream& os, const dense_matrix<VectorTT>& m);
+    friend std::ostream& operator<< (std::ostream& os, const dense_matrix& m);
   };
 
-  template <typename VectorT>
-  std::ostream& operator<<(std::ostream& os, const dense_matrix<VectorT>& m) {
+  inline
+  std::ostream& operator<<(std::ostream& os, const dense_matrix& m) {
     return m.print(os);
   }
 

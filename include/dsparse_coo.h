@@ -23,12 +23,7 @@ namespace dblas {
   void coo_to_dense(int m, int n,
     const double *spA, const int *rowind, const int *colind, int nnz, int origin,
     double *A, int lda) {
-    double* Aptr = A;
-    for (int j=0; j<n; j++, Aptr+=lda) {
-      for (int i=0; i<m; i++) {
-        Aptr[i] = 0;
-      }
-    }
+    dfill(m, n, A, lda, 0);
     for (int z=0; z<nnz; z++) {
       int i = rowind[z] - origin;
       int j = colind[z] - origin;
@@ -73,10 +68,7 @@ namespace dblas {
   inline void dcoommNN(int m, int n, int k, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int z=0; z<nnz; z++) {
       int i = rowind[z] - origin;
       int j = colind[z] - origin;
@@ -91,10 +83,7 @@ namespace dblas {
   inline void dcoommTN(int m, int n, int k, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int z=0; z<nnz; z++) {
       int i = rowind[z] - origin;
       int j = colind[z] - origin;
@@ -109,10 +98,7 @@ namespace dblas {
   inline void dcoommNT(int m, int n, int k, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int z=0; z<nnz; z++) {
       int i = rowind[z] - origin;
       int j = colind[z] - origin;
@@ -127,10 +113,7 @@ namespace dblas {
   inline void dcoommTT(int m, int n, int k, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int z=0; z<nnz; z++) {
       int i = rowind[z] - origin;
       int j = colind[z] - origin;

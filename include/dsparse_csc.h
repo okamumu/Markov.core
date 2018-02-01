@@ -26,12 +26,7 @@ namespace dblas {
   void csc_to_dense(int m, int n,
     const double *spA, const int *colptr, const int *rowind, int nnz, int origin,
     double *A, int lda) {
-    double* Aptr = A;
-    for (int j=0; j<n; j++, Aptr+=lda) {
-      for (int i=0; i<m; i++) {
-        Aptr[i] = 0;
-      }
-    }
+    dfill(m, n, A, lda, 0);
     for (int j=0; j<n; j++, A+=lda) {
       for (int z=colptr[j]-origin; z<colptr[j+1]-origin; z++) {
         int i = rowind[z] - origin;
@@ -80,10 +75,7 @@ namespace dblas {
   inline void dcscmmNN(int m, int n, int k, double alpha,
     const double *A, const int *colptr, const int *rowind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int j=0; j<k; j++) {
       for (int z=colptr[j]-origin; z<colptr[j+1]-origin; z++) {
         int i = rowind[z] - origin;
@@ -99,10 +91,7 @@ namespace dblas {
   inline void dcscmmTN(int m, int n, int k, double alpha,
     const double *A, const int *colptr, const int *rowind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int j=0; j<m; j++) {
       for (int z=colptr[j]-origin; z<colptr[j+1]-origin; z++) {
         int i = rowind[z] - origin;
@@ -118,10 +107,7 @@ namespace dblas {
   inline void dcscmmNT(int m, int n, int k, double alpha,
     const double *A, const int *colptr, const int *rowind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int j=0; j<k; j++) {
       for (int z=colptr[j]-origin; z<colptr[j+1]-origin; z++) {
         int i = rowind[z] - origin;
@@ -137,10 +123,7 @@ namespace dblas {
   inline void dcscmmTT(int m, int n, int k, double alpha,
     const double *A, const int *colptr, const int *rowind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
-    double* Cptr = C;
-    for (int i=0; i<n; i++, Cptr+=ldc) {
-      dscal(m, beta, Cptr, 1);
-    }
+    dscal(m, n, beta, C, ldc);
     for (int j=0; j<m; j++) {
       for (int z=colptr[j]-origin; z<colptr[j+1]-origin; z++) {
         int i = rowind[z] - origin;

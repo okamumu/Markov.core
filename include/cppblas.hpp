@@ -4,15 +4,13 @@
 
 namespace marlib {
 
-  // dfill
+  // basic functions: We expect VectorT = NumericVector and MatrixT = NumericMatrix in Rcpp
 
+  // size
   template <typename VectorT>
   inline
-  VectorT& dfill(VectorT& x, double alpha) {
-    for (auto xptr = x.begin(); xptr != x.end(); xptr++) {
-      *xptr = alpha;
-    }
-    return x;
+  int size(const VectorT& x) {
+    return x.size();
   }
 
   // inc
@@ -22,25 +20,48 @@ namespace marlib {
     return 1;
   }
 
+  // nrow
+  template <typename MatrixT>
+  inline
+  int nrow(const MatrixT& x) {
+    return x.nrow();
+  }
+
+  // ncol
+  template <typename MatrixT>
+  inline
+  int ncol(const MatrixT& x) {
+    return x.ncol();
+  }
+
   // ld
   template <typename MatrixT>
   inline
-  int ld(const Matrix& x) {
+  int ld(const MatrixT& x) {
     return x.nrow();
+  }
+
+  // dfill
+
+  template <typename VectorT>
+  inline
+  VectorT& dfill(VectorT& x, double alpha) {
+    dblas::dfill(size(x), &x[0], 1, alpha);
+    return x;
   }
 
   // nnz
   template <typename MatrixT>
   inline
-  int nnz(const MatrixT& m) {
-    return dblas::nnz(m.nrow(), m.ncol(), &m[0], lda(m));
+  int dnnz(const MatrixT& m) {
+    return dblas::dnnz(nrow(m), ncol(m), &m[0], ld(m));
   }
 
   // dcopy
   template <typename VectorT, typename VectorT2>
   inline
   VectorT2& dcopy(const VectorT& x, VectorT2& y) {
-    dblas::dcopy(x.size(), &x[0], inc(x), &y[0], inc(y));
+    dblas::dcopy(size(x), &x[0], inc(x), &y[0], inc(y));
     return y;
   }
 
@@ -51,7 +72,7 @@ namespace marlib {
   template <typename VectorT>
   inline
   VectorT& daxpy(double alpha, const VectorT& x, VectorT& y) {
-    dblas::daxpy(x.size(), alpha, &x[0], inc(x), &y[0], inc(y));
+    dblas::daxpy(size(x), alpha, &x[0], inc(x), &y[0], inc(y));
     return y;
   }
 
@@ -60,8 +81,16 @@ namespace marlib {
   template <typename VectorT>
   inline
   VectorT& dscal(double alpha, VectorT& x) {
-    dblas::dscal(x.size(), alpha, &x[0], inc(x));
+    dblas::dscal(size(x), alpha, &x[0], inc(x));
     return x;
+  }
+
+  // ddot
+
+  template <typename VectorT, typename VectorT2>
+  inline
+  double dcopy(const VectorT& x, const VectorT2& y) {
+    return dblas::ddot(size(x), &x[0], inc(x), &y[0], inc(y));
   }
 
   // dasum
@@ -69,7 +98,23 @@ namespace marlib {
   template <typename VectorT>
   inline
   double dasum(const VectorT& x) {
-    return dblas::dasum(x.size(), &x[0], inc(x));
+    return dblas::dasum(size(x), &x[0], inc(x));
+  }
+
+  // dnrm2
+
+  template <typename VectorT>
+  inline
+  double dnrm2(const VectorT& x) {
+    return dblas::dnrm2(size(x), &x[0], inc(x));
+  }
+
+  // damax
+
+  template <typename VectorT>
+  inline
+  double damax(const VectorT& x) {
+    return dblas::damax(size(x), &x[0], inc(x));
   }
 
   // BLAS level 2
@@ -79,14 +124,14 @@ namespace marlib {
   template <typename VectorT, typename MatrixT>
   inline
   VectorT& dgemvN(double alpha, const MatrixT& A, const VectorT& x, double beta, VectorT& y) {
-    dblas::dgemv('N', A.nrow(), A.ncol(), alpha, &A[0], ld(A), &x[0], inc(x), beta, &y[0], inc(y));
+    dblas::dgemv('N', nrow(A), ncol(A), alpha, &A[0], ld(A), &x[0], inc(x), beta, &y[0], inc(y));
     return y;
   }
 
   template <typename VectorT, typename MatrixT>
   inline
   VectorT& dgemvT(double alpha, const MatrixT& A, const VectorT& x, double beta, VectorT& y) {
-    dblas::dgemv('T', A.nrow(), A.ncol(), alpha, &A[0], ld(A), &x[0], inc(x), beta, &y[0], inc(y));
+    dblas::dgemv('T', nrow(A), ncol(A), alpha, &A[0], ld(A), &x[0], inc(x), beta, &y[0], inc(y));
     return y;
   }
 
@@ -115,7 +160,7 @@ namespace marlib {
   template <typename MatrixT, typename MatrixT2>
   inline
   MatrixT& dgemmNN(double alpha, const MatrixT2& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dgemm('N', 'N', C.nrow(), C.ncol(), A.ncol(), alpha, &A[0], ld(A), &B[0], ld(B),
+    dblas::dgemm('N', 'N', nrow(C), ncol(C), ncol(A), alpha, &A[0], ld(A), &B[0], ld(B),
       beta, &C[0], ld(C));
     return C;
   }
@@ -123,7 +168,7 @@ namespace marlib {
   template <typename MatrixT, typename MatrixT2>
   inline
   MatrixT& dgemmNT(double alpha, const MatrixT2& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dgemm('N', 'T', C.nrow(), C.ncol(), A.ncol(), alpha, &A[0], ld(A), &B[0], ld(B),
+    dblas::dgemm('N', 'T', nrow(C), ncol(C), ncol(A), alpha, &A[0], ld(A), &B[0], ld(B),
       beta, &C[0], ld(C));
     return C;
   }
@@ -131,7 +176,7 @@ namespace marlib {
   template <typename MatrixT, typename MatrixT2>
   inline
   MatrixT& dgemmTN(double alpha, const MatrixT2& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dgemm('T', 'N', C.nrow(), C.ncol(), A.nrow(), alpha, &A[0], ld(A), &B[0], ld(B),
+    dblas::dgemm('T', 'N', nrow(C), ncol(C), nrow(A), alpha, &A[0], ld(A), &B[0], ld(B),
       beta, &C[0], ld(C));
     return C;
   }
@@ -139,7 +184,7 @@ namespace marlib {
   template <typename MatrixT, typename MatrixT2>
   inline
   MatrixT& dgemmTT(double alpha, const MatrixT2& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dgemm('T', 'T', C.nrow(), C.ncol(), A.nrow(), alpha, &A[0], ld(A), &B[0], ld(B),
+    dblas::dgemm('T', 'T', nrow(C), ncol(C), nrow(A), alpha, &A[0], ld(A), &B[0], ld(B),
       beta, &C[0], ld(C));
     return C;
   }
