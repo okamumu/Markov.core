@@ -35,3 +35,4 @@ matrix
 CMakeCache.txt
 CMakeFiles
 Makefile
+test_*

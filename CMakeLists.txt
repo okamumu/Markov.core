@@ -19,3 +19,8 @@ add_executable(test_cppblas test/test_dblascpp.cpp)
 target_link_libraries(test_cppblas ${EXTRA_LIBS})
 add_test(NAME cppblas COMMAND $<TARGET_FILE:test_cppblas>)
 set_property(TEST cppblas APPEND PROPERTY FAIL_REGULAR_EXPRESSION false)
+
+add_executable(test_poisson test/test_poisson.cpp)
+target_link_libraries(test_poisson ${EXTRA_LIBS})
+add_test(NAME poisson COMMAND $<TARGET_FILE:test_poisson>)
+set_property(TEST poisson APPEND PROPERTY FAIL_REGULAR_EXPRESSION false)

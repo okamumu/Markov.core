@@ -19,7 +19,7 @@ std::uniform_real_distribution<> dist(0, 10000.0);
 std::string check_equal(const std::string& title, int n, const double *x, int incx, const double *y, int incy) {
   std::cout << title << ": ";
   for (int i=0; i<n; i++, x+=incx, y+=incy) {
-    if (std::abs(*x - *y) > 1.0e-10) {
+    if (std::abs(*x - *y) > 1.0e-12) {
       std::cout << "false: " << i << " " << (*x - *y) << std::endl;
       return "false";
     }
