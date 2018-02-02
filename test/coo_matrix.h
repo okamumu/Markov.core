@@ -4,20 +4,20 @@
 
 namespace marlib {
 
-  class csr_matrix {
+  class coo_matrix {
 
   public:
-    csr_matrix(int row_, int col_, int* rowptr_, int* colind_, double* value_, int nnz_, int origin_)
-    : m_row(row_), m_col(col_), m_nnz(nnz_), m_origin(origin_), rowptr(rowptr_), colind(colind_), value(value_) {}
+    coo_matrix(int row_, int col_, int* rowind_, int* colind_, double* value_, int nnz_, int origin_)
+    : m_row(row_), m_col(col_), m_nnz(nnz_), m_origin(origin_), rowind(rowind_), colind(colind_), value(value_) {}
 
-    ~csr_matrix() {}
+    ~coo_matrix() {}
 
   public:
     int m_row;
     int m_col;
     int m_nnz;
     int m_origin;
-    int* rowptr;
+    int* rowind;
     int* colind;
     double* value;
 
@@ -33,20 +33,18 @@ namespace marlib {
 
     ////// print
     std::ostream& print(std::ostream& os) const {
-      for (int i=0; i<m_row; i++) {
-        for (int z=rowptr[i]-m_origin; z<rowptr[i+1]-m_origin; z++) {
-          os << "(" << i + m_origin << "," << colind[z] << ")=" << value[z] << std::endl;
-        }
+      for (int z=0; z<m_nnz; z++) {
+        os << "(" << rowind[z] << "," << colind[z] << ")=" << value[z] << std::endl;
       }
       return os;
     }
 
-    friend std::ostream& operator<< (std::ostream& os, const csr_matrix& m);
+    friend std::ostream& operator<< (std::ostream& os, const coo_matrix& m);
 
   };
 
   inline
-  std::ostream& operator<<(std::ostream& os, const csr_matrix& m) {
+  std::ostream& operator<<(std::ostream& os, const coo_matrix& m) {
     return m.print(os);
   }
 }

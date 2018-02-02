@@ -30,9 +30,11 @@
 *.exe
 *.out
 *.app
-matrix
+
+# cmake
 *.cmake
 CMakeCache.txt
 CMakeFiles
 Makefile
-test_*
+
+matrix
