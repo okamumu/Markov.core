@@ -68,18 +68,18 @@ namespace marlib {
     return C;
   }
 
-  template <typename MatrixT, typename MatrixT2>
+  template <typename MatrixT>
   inline
   MatrixT& dgemmTN(double alpha, const csc_matrix& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dcscmmTN(nrow(C), ncol(C), ncol(A), alpha,  &A[0], &A.colptr[0], &A.rowind[0], A.nnz(), A.origin(),
+    dblas::dcscmmTN(nrow(C), ncol(C), nrow(A), alpha,  &A[0], &A.colptr[0], &A.rowind[0], A.nnz(), A.origin(),
     &B[0], ld(B), beta, &C[0], ld(C));
     return C;
   }
 
-  template <typename MatrixT, typename MatrixT2>
+  template <typename MatrixT>
   inline
   MatrixT& dgemmTT(double alpha, const csc_matrix& A, const MatrixT& B, double beta, MatrixT& C) {
-    dblas::dcscmmTT(nrow(C), ncol(C), ncol(A), alpha,  &A[0], &A.colptr[0], &A.rowind[0], A.nnz(), A.origin(),
+    dblas::dcscmmTT(nrow(C), ncol(C), nrow(A), alpha,  &A[0], &A.colptr[0], &A.rowind[0], A.nnz(), A.origin(),
     &B[0], ld(B), beta, &C[0], ld(C));
     return C;
   }

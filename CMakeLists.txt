@@ -8,6 +8,7 @@ SET(EXTRA_LIBS ${BLAS_LIBRARY})
 
 add_definitions("--std=c++11 -Wall")
 add_definitions("-DF77BLAS -DF77LAPACK")
+# add_definitions("-DDEBUG")
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_executable(test_dblas test/test_dblas.cpp)
