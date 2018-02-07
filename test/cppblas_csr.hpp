@@ -84,4 +84,14 @@ namespace marlib {
     return C;
   }
 
+  template <typename Func>
+  csr_matrix& map_matrix(csr_matrix& A, Func f) {
+    for (int i=0; i<nrow(A); i++) {
+      for (int z=A.rowptr[i]-A.origin(); z<A.rowptr[i+1]-A.origin(); z++) {
+        int j = A.colind[z] - A.origin();
+        f(i, j, A.value[z]);
+      }
+    }
+    return A;
+  }
 }

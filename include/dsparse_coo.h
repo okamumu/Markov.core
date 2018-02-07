@@ -1,13 +1,12 @@
-
 namespace dblas {
 
   inline
   void dense_to_coo(int m, int n, const double *A, int lda,
-    double *spA, int *rowind, int *colind, int nnz, int origin) {
+    double *spA, int *rowind, int *colind, int, int origin) {
     for (int j=0; j<n; j++) {
       const double *Aptr = A + j*lda;
       for (int i=0; i<m; i++, Aptr+=1) {
-        if (*Aptr != 0) {
+        if (!is_zero(*Aptr)) {
           *spA = *Aptr;
           spA++;
           *rowind = i + origin;
@@ -33,7 +32,7 @@ namespace dblas {
 
   // level 2
 
-  inline void dcoomvN(int m, int n, double alpha,
+  inline void dcoomvN(int m, int, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *x, int incx, double beta, double *y, int incy) {
     dscal(m, beta, y, incy);
@@ -44,7 +43,7 @@ namespace dblas {
     }
   }
 
-  inline void dcoomvT(int m, int n, double alpha,
+  inline void dcoomvT(int, int n, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *x, int incx, double beta, double *y, int incy) {
     dscal(n, beta, y, incy);
@@ -55,7 +54,7 @@ namespace dblas {
     }
   }
 
-  inline void dcoor(int m, int n, double alpha,
+  inline void dcoor(int, int, double alpha,
     const double *x, int incx, double *y, int incy,
     double *A, const int *rowind, const int *colind, int nnz, int origin) {
     for (int z=0; z<nnz; z++) {
@@ -65,7 +64,7 @@ namespace dblas {
     }
   }
 
-  inline void dcoommNN(int m, int n, int k, double alpha,
+  inline void dcoommNN(int m, int n, int, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
     dscal(m, n, beta, C, ldc);
@@ -80,7 +79,7 @@ namespace dblas {
     }
   }
 
-  inline void dcoommTN(int m, int n, int k, double alpha,
+  inline void dcoommTN(int m, int n, int, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
     dscal(m, n, beta, C, ldc);
@@ -95,7 +94,7 @@ namespace dblas {
     }
   }
 
-  inline void dcoommNT(int m, int n, int k, double alpha,
+  inline void dcoommNT(int m, int n, int, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
     dscal(m, n, beta, C, ldc);
@@ -110,7 +109,7 @@ namespace dblas {
     }
   }
 
-  inline void dcoommTT(int m, int n, int k, double alpha,
+  inline void dcoommTT(int m, int n, int, double alpha,
     const double *A, const int *rowind, const int *colind, int nnz, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
     dscal(m, n, beta, C, ldc);

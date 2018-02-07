@@ -48,7 +48,7 @@ void test_poi1() {
 
   double lambda = dist(engine);
   int right = poisson<double>::rightbound(lambda, 1.0e-8);
-  double prob[right+1];
+  double* prob = new double [right+1];
   vector vprob(right+1, prob);
   poisson<double> poi(right+1, prob);
 
@@ -62,6 +62,8 @@ void test_poi1() {
   }
   sum /= poi.weight();
   std::cout << check_equal("test poi", 1, &sum, 1, &one, 1) << std::endl;
+
+  delete [] prob;
 }
 
 int main() {

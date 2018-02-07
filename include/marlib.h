@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <cassert>
-
 #include <iostream>
 
 #include "dblas.h"
@@ -11,6 +10,7 @@
 #include "dsparse_coo.h"
 
 #include "cppblas.hpp"
+#include "cppapply.hpp"
 
 #include "poisson.hpp"
 #include "mexp_unif.hpp"

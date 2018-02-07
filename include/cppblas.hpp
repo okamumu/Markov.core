@@ -16,7 +16,7 @@ namespace marlib {
   // inc
   template <typename VectorT>
   inline
-  int inc(const VectorT& x) {
+  int inc(const VectorT&) {
     return 1;
   }
 
@@ -123,6 +123,16 @@ namespace marlib {
 
   template <typename VectorT, typename MatrixT>
   inline
+  VectorT& dgemv(char trans, double alpha, const MatrixT& A, const VectorT& x, double beta, VectorT& y) {
+    if (trans == 'N' || trans == 'n') {
+      return dgemvN(alpha, A, x, beta, y);
+    } else {
+      return dgemvT(alpha, A, x, beta, y);
+    }
+  }
+
+  template <typename VectorT, typename MatrixT>
+  inline
   VectorT& dgemvN(double alpha, const MatrixT& A, const VectorT& x, double beta, VectorT& y) {
     dblas::dgemv('N', nrow(A), ncol(A), alpha, &A[0], ld(A), &x[0], inc(x), beta, &y[0], inc(y));
     return y;
@@ -188,74 +198,5 @@ namespace marlib {
       beta, &C[0], ld(C));
     return C;
   }
-
-  ///
-
-  // template <typename MatrixT>
-  // inline
-  // Rcpp::NumericVector& dgemmNN(double alpha, const MatrixT& A, const Rcpp::NumericVector& B,
-  //   double beta, Rcpp::NumericVector& C) {
-  //   return dgemvN(alpha, A, B, beta, C);
-  // }
-  //
-  // template <typename MatrixT>
-  // inline
-  // Rcpp::NumericVector& dgemmNT(double alpha, const MatrixT& A, const Rcpp::NumericVector& B,
-  //   double beta, Rcpp::NumericVector& C) {
-  //   return dgemvN(alpha, A, B, beta, C);
-  // }
-  //
-  // template <typename MatrixT>
-  // inline
-  // Rcpp::NumericVector& dgemmTN(double alpha, const MatrixT& A, const Rcpp::NumericVector& B,
-  //   double beta, Rcpp::NumericVector& C) {
-  //   return dgemvT(alpha, A, B, beta, C);
-  // }
-  //
-  // template <typename MatrixT>
-  // inline
-  // Rcpp::NumericVector& dgemmTT(double alpha, const MatrixT& A, const Rcpp::NumericVector& B,
-  //   double beta, Rcpp::NumericVector& C) {
-  //   return dgemvT(alpha, A, B, beta, C);
-  // }
-
-//   // lapack
-//
-//   // dgesv: solve A X = B
-//   // The solution is assgined to B
-//
-//   template <typename ValueT>
-//   dense_matrix<ValueT>& dgesv(
-//     const dense_matrix<ValueT>& A, dense_matrix<ValueT>& B);
-//
-//   template <typename ValueT>
-//   vector<ValueT>& dgesv(
-//     const dense_matrix<ValueT>& A, vector<ValueT>& B);
-//
-// #ifdef F77BLAS
-//   template <>
-//   inline
-//   dense_matrix<double>& dgesv(
-//     const dense_matrix<double>& A, dense_matrix<double>& B) {
-//     assert(A.nrow() == A.ncol());
-//     dense_matrix<double> MA = A.clone();
-//     array<int> ipiv(A.nrow());
-//     int info = dblas::dgesv(A.nrow(), B.ncol(), MA.ptr(), MA.ld(), &ipiv[0], B.ptr(), B.ld());
-//     assert(info == 0);
-//     return B;
-//   }
-//
-//   template <>
-//   inline
-//   vector<double>& dgesv(
-//     const dense_matrix<double>& A, vector<double>& B) {
-//     assert(A.nrow() == A.ncol());
-//     dense_matrix<double> MA = A.clone();
-//     array<int> ipiv(A.nrow());
-//     int info = dblas::dgesv(A.nrow(), 1, MA.ptr(), MA.ld(), &ipiv[0], B.ptr(), B.size());
-//     assert(info == 0);
-//     return B;
-//   }
-// #endif
 
 }

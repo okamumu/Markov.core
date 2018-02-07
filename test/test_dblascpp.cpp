@@ -53,41 +53,319 @@ void print(const T& x) {
 #endif
 }
 
-void test_mv_csr() {
-  int size = 20;
-  double a[size];
-  double b[size];
-  double c[size];
-  random_vector(size, a);
-  random_vector(size, b);
-  random_vector(size, c);
+constexpr int SIZE = 20;
+
+void test_plus() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  vector va(SIZE, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  dcopy(va, vc);
+  print(va);
+
+  dplusa(va, 10.0);
+  print(va);
+  for (int i=0; i<SIZE; i++) {
+    c[i] += 10;
+  }
+  print(vc);
+  std::cout << check_equal("plus a", SIZE, c, 1, a, 1) << std::endl;
+
+  dmulti(va, vb);
+  print(va);
+  for (int i=0; i<SIZE; i++) {
+    c[i] *= b[i];
+  }
+  print(vc);
+  std::cout << check_equal("multi", SIZE, c, 1, a, 1) << std::endl;
+}
+
+void test_plus_csrN() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
 
   int m = 3;
   int n = 2;
   // int ld = 4;
   dense_matrix A(m, n, a);
-  vector vb(size, b);
-  vector vc(size, c);
+  dense_matrix C(m, n, c);
+  vector va(SIZE, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  dcopy(va, vc);
   print(A);
 
   int nz = dnnz(A);
   int origin = 1;
-  double spa[size];
-  int rowptr[size];
-  int colind[size];
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
+  csr_matrix spA(m, n, rowptr, colind, spa, nz, origin);
+  dcopy(A, spA);
+  print(spA);
+
+  dmultiMN(A, vb);
+  print(A);
+
+  dmultiMN(spA, vb);
+  print(spA);
+  print(vc);
+  dcopy(spA, C);
+
+  print(va);
+  print(vc);
+  std::cout << check_equal("dmultiM csr n", SIZE, c, 1, a, 1) << std::endl;
+}
+
+void test_plus_csrT() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  int m = 3;
+  int n = 2;
+  // int ld = 4;
+  dense_matrix A(m, n, a);
+  dense_matrix C(m, n, c);
+  vector va(SIZE, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  dcopy(va, vc);
+  print(A);
+
+  int nz = dnnz(A);
+  int origin = 1;
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
+  csr_matrix spA(m, n, rowptr, colind, spa, nz, origin);
+  dcopy(A, spA);
+  print(spA);
+
+  dmultiMT(A, vb);
+  print(A);
+
+  dmultiMT(spA, vb);
+  print(spA);
+  print(vc);
+  dcopy(spA, C);
+
+  print(va);
+  print(vc);
+  std::cout << check_equal("dmultiM csr t", SIZE, c, 1, a, 1) << std::endl;
+}
+
+void test_plus_cscN() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  int m = 3;
+  int n = 2;
+  // int ld = 4;
+  dense_matrix A(m, n, a);
+  dense_matrix C(m, n, c);
+  vector va(SIZE, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  dcopy(va, vc);
+  print(A);
+
+  int nz = dnnz(A);
+  int origin = 1;
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
+  csc_matrix spA(m, n, rowptr, colind, spa, nz, origin);
+  dcopy(A, spA);
+  print(spA);
+
+  dmultiMN(A, vb);
+  print(A);
+
+  dmultiMN(spA, vb);
+  print(spA);
+  print(vc);
+  dcopy(spA, C);
+
+  print(va);
+  print(vc);
+  std::cout << check_equal("dmultiM csc n", SIZE, c, 1, a, 1) << std::endl;
+}
+
+void test_plus_cscT() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  int m = 3;
+  int n = 2;
+  // int ld = 4;
+  dense_matrix A(m, n, a);
+  dense_matrix C(m, n, c);
+  vector va(SIZE, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  dcopy(va, vc);
+  print(A);
+
+  int nz = dnnz(A);
+  int origin = 1;
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
+  csc_matrix spA(m, n, rowptr, colind, spa, nz, origin);
+  dcopy(A, spA);
+  print(spA);
+
+  dmultiMT(A, vb);
+  print(A);
+
+  dmultiMT(spA, vb);
+  print(spA);
+  print(vc);
+  dcopy(spA, C);
+
+  print(va);
+  print(vc);
+  std::cout << check_equal("dmultiM csc t", SIZE, c, 1, a, 1) << std::endl;
+}
+
+void test_plus_cooN() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  int m = 3;
+  int n = 2;
+  // int ld = 4;
+  dense_matrix A(m, n, a);
+  dense_matrix C(m, n, c);
+  vector va(SIZE, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  dcopy(va, vc);
+  print(A);
+
+  int nz = dnnz(A);
+  int origin = 1;
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
+  coo_matrix spA(m, n, rowptr, colind, spa, nz, origin);
+  dcopy(A, spA);
+  print(spA);
+
+  dmultiMN(A, vb);
+  print(A);
+
+  dmultiMN(spA, vb);
+  print(spA);
+  print(vc);
+  dcopy(spA, C);
+
+  print(va);
+  print(vc);
+  std::cout << check_equal("dmultiM coo n", SIZE, c, 1, a, 1) << std::endl;
+}
+
+void test_plus_cooT() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  int m = 3;
+  int n = 2;
+  // int ld = 4;
+  dense_matrix A(m, n, a);
+  dense_matrix C(m, n, c);
+  vector va(SIZE, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  dcopy(va, vc);
+  print(A);
+
+  int nz = dnnz(A);
+  int origin = 1;
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
+  coo_matrix spA(m, n, rowptr, colind, spa, nz, origin);
+  dcopy(A, spA);
+  print(spA);
+
+  dmultiMT(A, vb);
+  print(A);
+
+  dmultiMT(spA, vb);
+  print(spA);
+  print(vc);
+  dcopy(spA, C);
+
+  print(va);
+  print(vc);
+  std::cout << check_equal("dmultiM coo t", SIZE, c, 1, a, 1) << std::endl;
+}
+
+void test_mv_csr() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  int m = 3;
+  int n = 2;
+  // int ld = 4;
+  dense_matrix A(m, n, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  print(A);
+
+  int nz = dnnz(A);
+  int origin = 1;
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
   csr_matrix spA(m, n, rowptr, colind, spa, nz, origin);
   dcopy(A, spA);
   print(spA);
 
   double alpha = dist(engine);
   double beta = dist(engine);
-  double x[size];
-  double y1[size];
-  double y2[size];
+  double x[SIZE];
+  double y1[SIZE];
+  double y2[SIZE];
 
-  vector vx(size, x);
-  vector vy1(size, y1);
-  vector vy2(size, y2);
+  vector vx(SIZE, x);
+  vector vy1(SIZE, y1);
+  vector vy2(SIZE, y2);
 
   dcopy(vb, vx);
   dcopy(vc, vy1);
@@ -96,7 +374,7 @@ void test_mv_csr() {
   dcopy(vc, vy2);
   dgemvN(alpha, spA, vx, beta, vy2);
   print(vy2);
-  std::cout << check_equal("dgemv csr n", size, y1, 1, y2, 1) << std::endl;
+  std::cout << check_equal("dgemv csr n", SIZE, y1, 1, y2, 1) << std::endl;
 
   dcopy(vb, vx);
   dcopy(vc, vy1);
@@ -105,44 +383,43 @@ void test_mv_csr() {
   dcopy(vc, vy2);
   dgemvT(alpha, spA, vx, beta, vy2);
   print(vy2);
-  std::cout << check_equal("dgemv csr t", size, y1, 1, y2, 1) << std::endl;
+  std::cout << check_equal("dgemv csr t", SIZE, y1, 1, y2, 1) << std::endl;
 }
 
 void test_mv_csc() {
-  int size = 20;
-  double a[size];
-  double b[size];
-  double c[size];
-  random_vector(size, a);
-  random_vector(size, b);
-  random_vector(size, c);
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
 
   int m = 3;
   int n = 2;
   // int ld = 4;
   dense_matrix A(m, n, a);
-  vector vb(size, b);
-  vector vc(size, c);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
   print(A);
 
   int nz = dnnz(A);
   int origin = 1;
-  double spa[size];
-  int rowptr[size];
-  int colind[size];
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
   csc_matrix spA(m, n, rowptr, colind, spa, nz, origin);
   dcopy(A, spA);
   print(spA);
 
   double alpha = dist(engine);
   double beta = dist(engine);
-  double x[size];
-  double y1[size];
-  double y2[size];
+  double x[SIZE];
+  double y1[SIZE];
+  double y2[SIZE];
 
-  vector vx(size, x);
-  vector vy1(size, y1);
-  vector vy2(size, y2);
+  vector vx(SIZE, x);
+  vector vy1(SIZE, y1);
+  vector vy2(SIZE, y2);
 
   dcopy(vb, vx);
   dcopy(vc, vy1);
@@ -151,7 +428,7 @@ void test_mv_csc() {
   dcopy(vc, vy2);
   dgemvN(alpha, spA, vx, beta, vy2);
   print(vy2);
-  std::cout << check_equal("dgemv csc n", size, y1, 1, y2, 1) << std::endl;
+  std::cout << check_equal("dgemv csc n", SIZE, y1, 1, y2, 1) << std::endl;
 
   dcopy(vb, vx);
   dcopy(vc, vy1);
@@ -160,44 +437,43 @@ void test_mv_csc() {
   dcopy(vc, vy2);
   dgemvT(alpha, spA, vx, beta, vy2);
   print(vy2);
-  std::cout << check_equal("dgemv csc t", size, y1, 1, y2, 1) << std::endl;
+  std::cout << check_equal("dgemv csc t", SIZE, y1, 1, y2, 1) << std::endl;
 }
 
 void test_mv_coo() {
-  int size = 20;
-  double a[size];
-  double b[size];
-  double c[size];
-  random_vector(size, a);
-  random_vector(size, b);
-  random_vector(size, c);
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
 
   int m = 3;
   int n = 2;
   // int ld = 4;
   dense_matrix A(m, n, a);
-  vector vb(size, b);
-  vector vc(size, c);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
   print(A);
 
   int nz = dnnz(A);
   int origin = 1;
-  double spa[size];
-  int rowptr[size];
-  int colind[size];
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
   coo_matrix spA(m, n, rowptr, colind, spa, nz, origin);
   dcopy(A, spA);
   print(spA);
 
   double alpha = dist(engine);
   double beta = dist(engine);
-  double x[size];
-  double y1[size];
-  double y2[size];
+  double x[SIZE];
+  double y1[SIZE];
+  double y2[SIZE];
 
-  vector vx(size, x);
-  vector vy1(size, y1);
-  vector vy2(size, y2);
+  vector vx(SIZE, x);
+  vector vy1(SIZE, y1);
+  vector vy2(SIZE, y2);
 
   dcopy(vb, vx);
   dcopy(vc, vy1);
@@ -206,7 +482,7 @@ void test_mv_coo() {
   dcopy(vc, vy2);
   dgemvN(alpha, spA, vx, beta, vy2);
   print(vy2);
-  std::cout << check_equal("dgemv coo n", size, y1, 1, y2, 1) << std::endl;
+  std::cout << check_equal("dgemv coo n", SIZE, y1, 1, y2, 1) << std::endl;
 
   dcopy(vb, vx);
   dcopy(vc, vy1);
@@ -215,29 +491,28 @@ void test_mv_coo() {
   dcopy(vc, vy2);
   dgemvT(alpha, spA, vx, beta, vy2);
   print(vy2);
-  std::cout << check_equal("dgemv coo t", size, y1, 1, y2, 1) << std::endl;
+  std::cout << check_equal("dgemv coo t", SIZE, y1, 1, y2, 1) << std::endl;
 }
 
 void test_dgemm_csr1() {
-  int size = 25;
-  double a[size];
-  double b[size];
-  double c[size];
-  random_vector(size, a);
-  random_vector(size, b);
-  random_vector(size, c);
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
 
   int m = 3;
   int n = 2;
   int k = 5;
 
-  double spa[size];
-  int rowptr[size];
-  int colind[size];
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
 
   dense_matrix A(m, k, a);
-  vector vb(size, b);
-  vector vc(size, c);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
   print(A);
 
   int nz = dnnz(A);
@@ -249,14 +524,14 @@ void test_dgemm_csr1() {
 
   double alpha = dist(engine);
   double beta = dist(engine);
-  double x[size];
-  double y1[size];
-  double y2[size];
+  double x[SIZE];
+  double y1[SIZE];
+  double y2[SIZE];
 
   {
-    dblas::dcopy(size, b, 1, x, 1);
-    dblas::dcopy(size, c, 1, y1, 1);
-    dblas::dcopy(size, c, 1, y2, 1);
+    dblas::dcopy(SIZE, b, 1, x, 1);
+    dblas::dcopy(SIZE, c, 1, y1, 1);
+    dblas::dcopy(SIZE, c, 1, y2, 1);
     dense_matrix vx(k, n, x);
     dense_matrix vy1(m, n, y1);
     dense_matrix vy2(m, n, y2);
@@ -264,13 +539,13 @@ void test_dgemm_csr1() {
     print(vy1);
     marlib::dgemm('N', 'N', alpha, spA, vx, beta, vy2);
     print(vy2);
-    std::cout << check_equal("dgemm csr n n", size, y1, 1, y2, 1) << std::endl;
+    std::cout << check_equal("dgemm csr n n", SIZE, y1, 1, y2, 1) << std::endl;
   }
 
   {
-    dblas::dcopy(size, b, 1, x, 1);
-    dblas::dcopy(size, c, 1, y1, 1);
-    dblas::dcopy(size, c, 1, y2, 1);
+    dblas::dcopy(SIZE, b, 1, x, 1);
+    dblas::dcopy(SIZE, c, 1, y1, 1);
+    dblas::dcopy(SIZE, c, 1, y2, 1);
     dense_matrix vx(n, k, x);
     dense_matrix vy1(m, n, y1);
     dense_matrix vy2(m, n, y2);
@@ -278,30 +553,29 @@ void test_dgemm_csr1() {
     print(vy1);
     marlib::dgemm('N', 'T', alpha, spA, vx, beta, vy2);
     print(vy2);
-    std::cout << check_equal("dgemm csr n t", size, y1, 1, y2, 1) << std::endl;
+    std::cout << check_equal("dgemm csr n t", SIZE, y1, 1, y2, 1) << std::endl;
   }
 }
 
 void test_dgemm_csr2() {
-  int size = 25;
-  double a[size];
-  double b[size];
-  double c[size];
-  random_vector(size, a);
-  random_vector(size, b);
-  random_vector(size, c);
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
 
   int m = 3;
   int n = 2;
   int k = 5;
 
-  double spa[size];
-  int rowptr[size];
-  int colind[size];
+  double spa[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
 
   dense_matrix A(k, m, a);
-  vector vb(size, b);
-  vector vc(size, c);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
   print(A);
 
   int nz = dnnz(A);
@@ -313,14 +587,14 @@ void test_dgemm_csr2() {
 
   double alpha = dist(engine);
   double beta = dist(engine);
-  double x[size];
-  double y1[size];
-  double y2[size];
+  double x[SIZE];
+  double y1[SIZE];
+  double y2[SIZE];
 
   {
-    dblas::dcopy(size, b, 1, x, 1);
-    dblas::dcopy(size, c, 1, y1, 1);
-    dblas::dcopy(size, c, 1, y2, 1);
+    dblas::dcopy(SIZE, b, 1, x, 1);
+    dblas::dcopy(SIZE, c, 1, y1, 1);
+    dblas::dcopy(SIZE, c, 1, y2, 1);
     dense_matrix vx(k, n, x);
     dense_matrix vy1(m, n, y1);
     dense_matrix vy2(m, n, y2);
@@ -328,13 +602,13 @@ void test_dgemm_csr2() {
     print(vy1);
     marlib::dgemm('T', 'N', alpha, spA, vx, beta, vy2);
     print(vy2);
-    std::cout << check_equal("dgemm csr t n", size, y1, 1, y2, 1) << std::endl;
+    std::cout << check_equal("dgemm csr t n", SIZE, y1, 1, y2, 1) << std::endl;
   }
 
   {
-    dblas::dcopy(size, b, 1, x, 1);
-    dblas::dcopy(size, c, 1, y1, 1);
-    dblas::dcopy(size, c, 1, y2, 1);
+    dblas::dcopy(SIZE, b, 1, x, 1);
+    dblas::dcopy(SIZE, c, 1, y1, 1);
+    dblas::dcopy(SIZE, c, 1, y2, 1);
     dense_matrix vx(n, k, x);
     dense_matrix vy1(m, n, y1);
     dense_matrix vy2(m, n, y2);
@@ -342,11 +616,19 @@ void test_dgemm_csr2() {
     print(vy1);
     marlib::dgemm('T', 'T', alpha, spA, vx, beta, vy2);
     print(vy2);
-    std::cout << check_equal("dgemm csr t t", size, y1, 1, y2, 1) << std::endl;
+    std::cout << check_equal("dgemm csr t t", SIZE, y1, 1, y2, 1) << std::endl;
   }
 }
 
 int main() {
+  test_plus();
+  test_plus_csrN();
+  test_plus_csrT();
+  test_plus_cscN();
+  test_plus_cscT();
+  test_plus_cooN();
+  test_plus_cooT();
+
   test_mv_csr();
   test_mv_csc();
   test_mv_coo();

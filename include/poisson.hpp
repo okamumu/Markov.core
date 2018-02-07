@@ -160,7 +160,7 @@ namespace marlib {
 	template <typename ValueT>
 	int poisson<ValueT>::rightbound(ValueT lambda, ValueT eps) {
 		int right;
-		if (lambda == 0) {
+		if (dblas::is_zero(lambda)) {
 			return 0;
 		}
 		if (lambda < POISSON_LAMBDA_MIN) {

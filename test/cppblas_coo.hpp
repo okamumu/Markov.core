@@ -84,4 +84,13 @@ namespace marlib {
     return C;
   }
 
+  template <typename Func>
+  coo_matrix& map_matrix(coo_matrix& A, Func f) {
+    for (int z=0; z<A.nnz(); z++) {
+      int i = A.rowind[z] - A.origin();
+      int j = A.colind[z] - A.origin();
+      f(i, j, A.value[z]);
+    }
+    return A;
+  }
 }

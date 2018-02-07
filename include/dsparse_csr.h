@@ -1,16 +1,15 @@
-
 namespace dblas {
 
   inline
   void dense_to_csr(int m, int n, const double *A, int lda,
-    double *spA, int *rowptr, int *colind, int nnz, int origin) {
+    double *spA, int *rowptr, int *colind, int, int origin) {
     int z = origin;
     for (int i=0; i<m; i++) {
       *rowptr = z;
       rowptr++;
       const double *Aptr = A + i;
       for (int j=0; j<n; j++, Aptr+=lda) {
-        if (*Aptr != 0) {
+        if (!is_zero(*Aptr)) {
           *spA = *Aptr;
           spA++;
           *colind = j + origin;
@@ -24,7 +23,7 @@ namespace dblas {
 
   inline
   void csr_to_dense(int m, int n,
-    const double *spA, const int *rowptr, const int *colind, int nnz, int origin,
+    const double *spA, const int *rowptr, const int *colind, int, int origin,
     double *A, int lda) {
     dfill(m, n, A, lda, 0);
     for (int i=0; i<m; i++, A+=1) {
@@ -37,8 +36,8 @@ namespace dblas {
 
   // level 2
 
-  inline void dcsrmvN(int m, int n, double alpha,
-    const double *A, const int *rowptr, const int *colind, int nnz, int origin,
+  inline void dcsrmvN(int m, int, double alpha,
+    const double *A, const int *rowptr, const int *colind, int, int origin,
     const double *x, int incx, double beta, double *y, int incy) {
     dscal(m, beta, y, incy);
     for (int i=0; i<m; i++) {
@@ -50,7 +49,7 @@ namespace dblas {
   }
 
   inline void dcsrmvT(int m, int n, double alpha,
-    const double *A, const int *rowptr, const int *colind, int nnz, int origin,
+    const double *A, const int *rowptr, const int *colind, int, int origin,
     const double *x, int incx, double beta, double *y, int incy) {
     dscal(n, beta, y, incy);
     for (int i=0; i<m; i++) {
@@ -61,9 +60,9 @@ namespace dblas {
     }
   }
 
-  inline void dcsrr(int m, int n, double alpha,
+  inline void dcsrr(int m, int, double alpha,
     const double *x, int incx, const double *y, int incy,
-    double *A, const int *rowptr, const int *colind, int nnz, int origin) {
+    double *A, const int *rowptr, const int *colind, int, int origin) {
     for (int i=0; i<m; i++) {
       for (int z=rowptr[i]-origin; z<rowptr[i+1]-origin; z++) {
         int j = colind[z] - origin;
@@ -72,8 +71,8 @@ namespace dblas {
     }
   }
 
-  inline void dcsrmmNN(int m, int n, int k, double alpha,
-    const double *A, const int *rowptr, const int *colind, int nnz, int origin,
+  inline void dcsrmmNN(int m, int n, int, double alpha,
+    const double *A, const int *rowptr, const int *colind, int, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
     dscal(m, n, beta, C, ldc);
     for (int i=0; i<m; i++) {
@@ -89,7 +88,7 @@ namespace dblas {
   }
 
   inline void dcsrmmTN(int m, int n, int k, double alpha,
-    const double *A, const int *rowptr, const int *colind, int nnz, int origin,
+    const double *A, const int *rowptr, const int *colind, int, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
     dscal(m, n, beta, C, ldc);
     for (int i=0; i<k; i++) {
@@ -104,8 +103,8 @@ namespace dblas {
     }
   }
 
-  inline void dcsrmmNT(int m, int n, int k, double alpha,
-    const double *A, const int *rowptr, const int *colind, int nnz, int origin,
+  inline void dcsrmmNT(int m, int n, int, double alpha,
+    const double *A, const int *rowptr, const int *colind, int, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
     dscal(m, n, beta, C, ldc);
     for (int i=0; i<m; i++) {
@@ -121,7 +120,7 @@ namespace dblas {
   }
 
   inline void dcsrmmTT(int m, int n, int k, double alpha,
-    const double *A, const int *rowptr, const int *colind, int nnz, int origin,
+    const double *A, const int *rowptr, const int *colind, int, int origin,
     const double *B, int ldb, double beta, double *C, int ldc) {
     dscal(m, n, beta, C, ldc);
     for (int i=0; i<k; i++) {

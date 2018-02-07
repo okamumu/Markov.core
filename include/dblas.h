@@ -3,6 +3,8 @@
   wrapper for blas
  */
 
+#include <cfloat>
+
 namespace dblas {
   // level 1
   void dfill(int n, double *x, int incx, double alpha);
@@ -98,6 +100,11 @@ namespace dblas {
   #define __DGER__ dger_
   #define __DGEMM__ dgemm_
   #endif
+
+  inline
+  bool is_zero(double x) {
+    return fabs(x) < DBL_EPSILON;
+  }
 
   // level 1
 
@@ -277,7 +284,7 @@ namespace dblas {
     int z = 0;
     for (int j=0; j<n; j++) {
       for (int i=0; i<m; i++) {
-        if (A[i+j*lda] != 0) {
+        if (!is_zero(A[i+j*lda])) {
           z++;
         }
       }
