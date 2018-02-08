@@ -59,4 +59,34 @@ namespace marlib {
   MatrixT& ddivMT(MatrixT& x, const VectorT& y) {
     return map_matrix(x, [=](int, int j, double& value){ value /= y[j]; });
   }
+
+  //
+
+  template <typename MatrixT>
+  inline
+  MatrixT& dfill(MatrixT& x, eye) {
+    return map_matrix(x, [=](int i, int j, double& value){ if (i == j) { value = 1; } else { value = 0; } });
+  }
+
+  //
+
+  template <typename MatrixT>
+  inline
+  MatrixT& dunif(MatrixT& x, double ufact, double& qv) {
+    double* xptr = &x[0];
+    double maxv = 0;
+    for (int i=0; i<nrow(x); i++, xptr += ld(x)+1) {
+      double tmp = std::abs(*xptr);
+      if (tmp > maxv) {
+        maxv = tmp;
+      }
+    }
+    qv = maxv * ufact;
+    dscal(1/qv, x);
+
+    xptr = &x[0];
+    for (int i=0; i<nrow(x); i++, xptr += ld(x)+1) {
+      *xptr += 1;
+    }
+  }
 }

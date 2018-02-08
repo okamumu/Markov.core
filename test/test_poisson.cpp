@@ -58,7 +58,7 @@ void test_poi1() {
   double sum = 0;
   double one = 1;
   for (int i=poi.left(); i<=poi.right(); i++) {
-    sum += poi(i);
+    sum += poi[i];
   }
   sum /= poi.weight();
   std::cout << check_equal("test poi", 1, &sum, 1, &one, 1) << std::endl;

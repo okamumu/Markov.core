@@ -10,34 +10,17 @@
 namespace marlib {
 
   template <typename MatrixT, typename VectorT, typename Poisson>
-  VectorT& mexp_unif_trans(const MatrixT& P, double qv, const Poisson& pois, const VectorT& x, VectorT& y, double atol) {
-    VectorT xi = clone(x);
-    VectorT tmp = clone(x);
+  VectorT& mexp_unif(char trans, const MatrixT& P,
+    double, const Poisson& pois, const VectorT& x, VectorT& y,
+    VectorT& xi, VectorT& tmp, double atol) {
 
-    dfill(y, 0);
+    dcopy(x, xi);
+    dfill(y, 0.0);
     daxpy(pois(pois.left()), xi, y);
     for (int k=pois.left()+1; k<=pois.right(); k++) {
       dcopy(xi, tmp);
-      dgemmTN(1, P, tmp, 0, xi);
-      daxpy(pois(k), xi, y);
-      if (dasum(xi) < atol)
-        break;
-    }
-    dscal(1.0/pois.weight(), y);
-    return y;
-  }
-
-  template <typename MatrixT, typename VectorT, typename Poisson>
-  VectorT& mexp_unif_notrans(const MatrixT& P, double qv, const Poisson& pois, const VectorT& x, VectorT& y, double atol) {
-    VectorT xi = clone(x);
-    VectorT tmp = clone(x);
-
-    dfill(y, 0);
-    daxpy(pois(pois.left()), xi, y);
-    for (int k=pois.left()+1; k<=pois.right(); k++) {
-      dcopy(xi, tmp);
-      dgemmNN(1, P, tmp, 0, xi);
-      daxpy(pois(k), xi, y);
+      dgemm(trans, 'N', 1.0, P, tmp, 0.0, xi);
+      daxpy(pois[k], xi, y);
       if (dasum(xi) < atol)
         break;
     }

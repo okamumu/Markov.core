@@ -28,7 +28,7 @@ namespace marlib {
 		ValueT weight() const;
     ValueT lambda() const;
 
-		ValueT operator()(int i) const;
+		ValueT operator[](int i) const;
 
     static int rightbound(ValueT lambda, ValueT eps);
 
@@ -76,7 +76,7 @@ namespace marlib {
 	}
 
 	template <typename ValueT>
-	inline ValueT poisson<ValueT>::operator()(int i) const {
+	inline ValueT poisson<ValueT>::operator[](int i) const {
 		return m_prob[i - m_left];
 	}
 

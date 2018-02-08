@@ -4,6 +4,8 @@
 
 namespace marlib {
 
+  struct eye{};
+
   // basic functions: We expect VectorT = NumericVector and MatrixT = NumericMatrix in Rcpp
 
   // size
@@ -43,9 +45,9 @@ namespace marlib {
 
   // dfill
 
-  template <typename VectorT>
+  template <typename VectorT, typename ValueT>
   inline
-  VectorT& dfill(VectorT& x, double alpha) {
+  VectorT& dfill(VectorT& x, ValueT alpha) {
     dblas::dfill(size(x), &x[0], 1, alpha);
     return x;
   }

@@ -620,6 +620,29 @@ void test_dgemm_csr2() {
   }
 }
 
+void test_eye() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  int m = 3;
+  int n = 3;
+  // int ld = 4;
+  dense_matrix A(m, n, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  print(A);
+
+  dfill(A, eye());
+
+  std::cout << "test eye" << std::endl;
+  std::cout << A << std::endl;
+
+}
+
 int main() {
   test_plus();
   test_plus_csrN();
@@ -635,4 +658,6 @@ int main() {
 
   test_dgemm_csr1();
   test_dgemm_csr2();
+
+  test_eye();
 }
