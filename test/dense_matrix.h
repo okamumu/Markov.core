@@ -5,8 +5,9 @@
 namespace marlib {
 
   class dense_matrix {
-
   public:
+    using value_type = double;
+
     dense_matrix(int nrow, int ncol, double* v)
     : m_size(nrow*ncol), m_row(nrow), m_col(ncol), m_value(v) {}
     ~dense_matrix() {}
@@ -43,5 +44,15 @@ namespace marlib {
   std::ostream& operator<<(std::ostream& os, const dense_matrix& m) {
     return m.print(os);
   }
+
+  template <class L>
+  struct get_category<dense_matrix,L> {
+    using type = double_dense_matrix_tag;
+  };
+
+  template <>
+  struct get_category<dense_matrix,blas_level1_tag> {
+    using type = double_vector_tag;
+  };
 
 }
