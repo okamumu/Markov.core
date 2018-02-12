@@ -8,10 +8,10 @@
 
 #include "marlib.h"
 
-#include "vector.h"
-#include "dense_matrix.h"
+#include "_vector4test.h"
+#include "_dense_matrix4test.h"
+#include "_csr_matrix4test.h"
 
-// #include "csr_matrix.h"
 // #include "cppblas_csr.hpp"
 //
 // #include "csc_matrix.h"
@@ -58,33 +58,128 @@ constexpr int SIZE = 20;
 void test_copy() {
   double a[SIZE];
   double b[SIZE];
-  double c[SIZE];
+  double aans[SIZE];
+  double bans[SIZE];
+  int rowptr[SIZE];
+  int colind[SIZE];
+  double value[SIZE];
   random_vector(SIZE, a);
   random_vector(SIZE, b);
-  random_vector(SIZE, c);
 
+  int m = 3;
+  int n = 2;
+  int ld = 4;
   vector va(SIZE, a);
   vector vb(SIZE, b);
-  vector vc(SIZE, c);
+  vector vaans(SIZE, aans);
+  vector vbans(SIZE, bans);
+  dense_matrix<> A(3,2,a);
+  dense_matrix<> B(3,2,b);
+  dense_matrix<std::false_type> Ad(m,n,a,ld);
+  dense_matrix<std::false_type> Bd(m,n,b,ld);
+
   dcopy(1, va);
+  for (int i=0; i<SIZE; i++) {
+    aans[i] = 1;
+  }
   print(va);
+  std::cout << check_equal("copy an integer to a vector", SIZE, a, 1, aans, 1) << std::endl;
 
   dcopy(vb, va);
+  for (int i=0; i<SIZE; i++) {
+    aans[i] = b[i];
+  }
   print(va);
+  std::cout << check_equal("copy a vector to a vector", SIZE, a, 1, aans, 1) << std::endl;
 
   dcopy(0.0, va);
+  for (int i=0; i<SIZE; i++) {
+    aans[i] = 0.0;
+  }
   print(va);
-
-  dense_matrix A(3,2,a);
-  dense_matrix B(3,2,b);
+  std::cout << check_equal("copy a double to a vector", SIZE, a, 1, aans, 1) << std::endl;
 
   dcopy(1, A);
+  for (int j=0; j<n; j++) {
+    double* ptr = &aans[j*m];
+    for (int i=0; i<m; i++) {
+      ptr[i] = 1;
+    }
+  }
   print(va);
+  print(vaans);
+  std::cout << check_equal("copy a double to a matrix", SIZE, a, 1, aans, 1) << std::endl;
 
-  dcopy(B, A);
+  dcopy(0, va);
+  dcopy(0, vaans);
+  dcopy(1, Ad);
+  for (int j=0; j<n; j++) {
+    double* ptr = &aans[j*ld];
+    for (int i=0; i<m; i++) {
+      ptr[i] = 1;
+    }
+  }
   print(va);
+  print(vaans);
+  std::cout << check_equal("copy a double to a matrix (ld)", SIZE, a, 1, aans, 1) << std::endl;
 
-  dcopy(vb, a);
+  dcopy(vb, va);
+  dcopy(vb, vaans);
+  dcopy(0, vb);
+  dcopy(0, vbans);
+  dcopy(Ad, B);
+  for (int j=0; j<n; j++) {
+    double* ptr = &aans[j*ld];
+    double* bptr = &bans[j*m];
+    for (int i=0; i<m; i++) {
+      bptr[i] = ptr[i];
+    }
+  }
+  print(vb);
+  print(vbans);
+  std::cout << check_equal("copy a vector/matrix to a matrix (ld)", SIZE, b, 1, bans, 1) << std::endl;
+
+  {
+    random_vector(SIZE, a);
+    int nnz = dnnz(A);
+    int origin = 1;
+    csr_matrix spA(m, n, rowptr, colind, value, nnz, origin);
+    dcopy(A, spA);
+    print(A);
+    print(spA);
+    dcopy(0, va);
+    dcopy(0, vaans);
+    va[0] = nnz;
+    vaans[0] = dnnz(spA);
+    std::cout << check_equal("nnz for csr", SIZE, a, 1, aans, 1) << std::endl;
+  }
+
+  {
+    random_vector(SIZE, b);
+    dcopy(vb, va);
+    dcopy(vb, vaans);
+    int nnz = dnnz(A);
+    int origin = 1;
+    csr_matrix spA(m, n, rowptr, colind, value, nnz, origin);
+    dcopy(A, spA);
+    dcopy(eye_matrix(), A);
+    dcopy(eye_matrix(), spA);
+    print(A);
+    print(spA);
+    dense_matrix<> Aans(3,2,aans);
+    dcopy(spA, Aans);
+    print(Aans);
+    for (int i=0; i<SIZE; i++) {
+      va[i] *= vb[i];
+    }
+    // mapapply(va, [=](double& v) { v *= vb[i]; });
+    for (int i=0; i<SIZE; i++) {
+      vaans[i] *= vb[i];
+    }
+    print(va);
+    print(vaans);
+    std::cout << check_equal("sparse (csr)", SIZE, a, 1, aans, 1) << std::endl;
+  }
 }
 
 // void test_plus() {

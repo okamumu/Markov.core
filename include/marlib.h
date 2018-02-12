@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
+#include <type_traits>
 
 #include "dblas.h"
 #include "dsparse_csr.h"
@@ -11,6 +12,10 @@
 #include "dsparse_coo.h"
 
 #include "marlib_traits.hpp"
+#include "marlib_dcopy.hpp"
+#include "marlib_dnnz.hpp"
+#include "marlib_mapapply.hpp"
+
 // #include "cppblas.hpp"
 // #include "cppapply.hpp"
 //
