@@ -9,8 +9,22 @@ namespace marlib {
     return mapapply_impl(x, f, typename get_category<T>::type());
   }
 
+  /// for vector
+
   template <typename T, typename Func>
-  T& mapapply_impl(T& x, Func f, double_vector_tag) {
+  T& mapapply_impl(T& x, Func f, double_vector_tag,
+    typename std::enable_if<is_callable<Func,int,typename base_traits<T>::reference_type>::value>::type* = nullptr) {
+    using traits = vector_traits<T>;
+    auto xptr = traits::begin(x);
+    for (int i=0; i<traits::size(x); i++, xptr+=traits::inc(x)) {
+      f(i, *xptr);
+    }
+    return x;
+  }
+
+  template <typename T, typename Func>
+  T& mapapply_impl(T& x, Func f, double_vector_tag,
+    typename std::enable_if<is_callable<Func,typename base_traits<T>::reference_type>::value>::type* = nullptr) {
     using traits = vector_traits<T>;
     auto xptr = traits::begin(x);
     for (int i=0; i<traits::size(x); i++, xptr+=traits::inc(x)) {
@@ -19,13 +33,54 @@ namespace marlib {
     return x;
   }
 
+  /// for dense matrix
+
   template <typename T, typename Func>
-  T& mapapply_impl(T& x, Func f, double_dense_matrix_tag) {
+  T& mapapply_impl(T& x, Func f, double_dense_matrix_tag,
+    typename std::enable_if<is_callable<Func,int,int,typename base_traits<T>::reference_type>::value>::type* = nullptr) {
+    using traits = dense_matrix_traits<T>;
+    auto xptr = traits::begin(x);
+    for (int j=0; j<traits::ncol(x); j++, xptr+=traits::ld(x)) {
+      for (int i=0; i<traits::nrow(x); i++) {
+        f(i, j, xptr[i]);
+      }
+    }
+    return x;
+  }
+
+  template <typename T, typename Func>
+  T& mapapply_impl(T& x, Func f, double_dense_matrix_tag,
+    typename std::enable_if<is_callable<Func,typename base_traits<T>::reference_type>::value>::type* = nullptr) {
     using traits = dense_matrix_traits<T>;
     auto xptr = traits::begin(x);
     for (int j=0; j<traits::ncol(x); j++, xptr+=traits::ld(x)) {
       for (int i=0; i<traits::nrow(x); i++) {
         f(xptr[i]);
+      }
+    }
+    return x;
+  }
+
+  /// for csr matrix
+
+  template <typename T, typename Func>
+  T& mapapply_impl(T& x, Func f, double_csr_matrix_tag,
+    typename std::enable_if<is_callable<Func,typename base_traits<T>::reference_type>::value>::type* = nullptr) {
+    using traits = csr_matrix_traits<T>;
+    for (int i=0; i<traits::size(x); i++) {
+      f(x[i]);
+    }
+    return x;
+  }
+
+  template <typename T, typename Func>
+  T& mapapply_impl(T& x, Func f, double_csr_matrix_tag,
+    typename std::enable_if<is_callable<Func,int,int,typename base_traits<T>::reference_type>::value>::type* = nullptr) {
+    using traits = csr_matrix_traits<T>;
+    for (int i=0; i<traits::nrow(x); i++) {
+      for (int z=traits::rowptr(x)[i]-traits::origin(x); z<traits::rowptr(x)[i+1]-traits::origin(x); z++) {
+        int j = traits::colind(x)[z]-traits::origin(x);
+        f(i, j, x[z]);
       }
     }
     return x;

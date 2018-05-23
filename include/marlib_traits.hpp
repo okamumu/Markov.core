@@ -33,6 +33,16 @@ namespace marlib {
   };
 
   template<typename T>
+  struct add_reference {
+    using type = T&;
+  };
+
+  template<typename T>
+  struct add_const_reference {
+    using type = const T&;
+  };
+
+  template<typename T>
   struct add_pointer {
     using type = T*;
   };
@@ -52,10 +62,25 @@ namespace marlib {
     using type = Else;
   };
 
+  template <class... Args>
+  struct is_callable_impl {
+    template <class F>
+    static std::true_type
+      check(decltype(std::declval<F>()(std::declval<Args>()...), (void)0)*);
+
+    template <class F>
+    static std::false_type check(...);
+  };
+
+  template <class F, class... Args>
+  struct is_callable : decltype(is_callable_impl<Args...>::template check<F>(nullptr)) {};
+
   template <class T>
   struct base_traits {
     using value_type = typename T::value_type;
     using pointer_type = typename add_pointer<typename T::value_type>::type;
+    using reference_type = typename add_reference<typename T::value_type>::type;
+    using const_reference_type = typename add_const_reference<typename T::value_type>::type;
     using const_pointer_type = typename add_const_pointer<typename T::value_type>::type;
     static const_pointer_type begin(const T& v) { return &v[0]; }
     static const_pointer_type end(const T& v) { return &v[0] + v.size(); }

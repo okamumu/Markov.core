@@ -9,7 +9,13 @@ namespace marlib {
 
   template <typename Value2>
   Value2& dcopy(eye_matrix, Value2& y) {
-    return dcopy_eye_impl(y, typename get_category<Value2>::type());
+    return mapapply(y, [](int i, int j, double& value) {
+      if (i == j) {
+        value = 1;
+      } else {
+        value = 0;
+      }
+    });
   }
 
   // const_value to vector
@@ -24,20 +30,18 @@ namespace marlib {
   // const_value to dense_matrix
 
   template <typename Value1, typename Value2>
-  Value2& dcopy_impl(const Value1& x, Value2& y, constant_value_tag t1, double_dense_matrix_tag t2) {
+  Value2& dcopy_impl(const Value1& x, Value2& y, constant_value_tag, double_dense_matrix_tag) {
     using traits2 = dense_matrix_traits<Value2>;
-    return dcopy_impl(x, y, t1, t2, typename traits2::to_vector());
+    return dcopy_impl(x, y, constant_value_tag(), double_dense_matrix_tag(), typename traits2::to_vector());
   }
 
   template <typename Value1, typename Value2>
   Value2& dcopy_impl(const Value1& x, Value2& y, constant_value_tag, double_dense_matrix_tag, std::true_type) {
-    std::cout << "call simple" << std::endl;
     return dcopy_impl(x, y, constant_value_tag(), double_vector_tag());
   }
 
   template <typename Value1, typename Value2>
   Value2& dcopy_impl(const Value1& x, Value2& y, constant_value_tag, double_dense_matrix_tag, std::false_type) {
-    std::cout << "call not simple" << std::endl;
     using traits2 = dense_matrix_traits<Value2>;
     auto yptr = traits2::begin(y);
     for (int j=0; j<traits2::ncol(y); j++, yptr+=traits2::ld(y)) {
@@ -67,9 +71,9 @@ namespace marlib {
   // vector to dense_matrix
 
   template <typename Value1, typename Value2>
-  Value2& dcopy_impl(const Value1& x, Value2& y, double_vector_tag t1, double_dense_matrix_tag t2) {
+  Value2& dcopy_impl(const Value1& x, Value2& y, double_vector_tag, double_dense_matrix_tag) {
     using traits2 = dense_matrix_traits<Value2>;
-    return dcopy_impl(x, y, t1, t2, typename traits2::to_vector());
+    return dcopy_impl(x, y, double_vector_tag(), double_dense_matrix_tag(), typename traits2::to_vector());
   }
 
   template <typename Value1, typename Value2>
@@ -100,9 +104,9 @@ namespace marlib {
   // dense_matrix to vector
 
   template <typename Value1, typename Value2>
-  Value2& dcopy_impl(const Value1& x, Value2& y, double_dense_matrix_tag t1, double_vector_tag t2) {
+  Value2& dcopy_impl(const Value1& x, Value2& y, double_dense_matrix_tag, double_vector_tag) {
     using traits1 = dense_matrix_traits<Value1>;
-    return dcopy_impl(x, y, t1, t2, typename traits1::to_vector());
+    return dcopy_impl(x, y, double_dense_matrix_tag(), double_vector_tag(), typename traits1::to_vector());
   }
 
   template <typename Value1, typename Value2>
@@ -126,16 +130,15 @@ namespace marlib {
   // dense_matrix to dense_matrix
 
   template <typename Value1, typename Value2>
-  Value2& dcopy_impl(const Value1& x, Value2& y, double_dense_matrix_tag t1, double_dense_matrix_tag t2) {
-    std::cout << "call dcopy dmat dmat" << std::endl;
+  Value2& dcopy_impl(const Value1& x, Value2& y, double_dense_matrix_tag, double_dense_matrix_tag) {
     using traits1 = dense_matrix_traits<Value1>;
     using traits2 = dense_matrix_traits<Value2>;
-    return dcopy_impl(x, y, t1, t2, typename traits1::to_vector(), typename traits2::to_vector());
+    return dcopy_impl(x, y, double_dense_matrix_tag(), double_dense_matrix_tag(),
+      typename traits1::to_vector(), typename traits2::to_vector());
   }
 
   template <typename Value1, typename Value2, typename BoolType1, typename BoolType2>
   Value2& dcopy_impl(const Value1& x, Value2& y, double_dense_matrix_tag, double_dense_matrix_tag, BoolType1, BoolType2) {
-    std::cout << "call not simple mat" << std::endl;
     using traits1 = dense_matrix_traits<Value1>;
     using traits2 = dense_matrix_traits<Value2>;
     auto xptr = traits1::begin(x);
@@ -150,7 +153,6 @@ namespace marlib {
 
   template <typename Value1, typename Value2>
   Value2& dcopy_impl(const Value1& x, Value2& y, double_dense_matrix_tag, double_dense_matrix_tag, std::true_type, std::true_type) {
-    std::cout << "call simple mat" << std::endl;
     return dcopy_impl(x, y, double_vector_tag(), double_vector_tag());
   }
 
@@ -222,7 +224,6 @@ namespace marlib {
     for (int i=0; i<traits2::nrow(y); i++) {
       for (int z=traits2::rowptr(y)[i]-traits2::origin(y); z<traits2::rowptr(y)[i+1]-traits2::origin(y); z++) {
         int j = traits2::colind(y)[z] - traits2::origin(y);
-        std::cout << "(" << i << ", " << j << ")" << std::endl;
         if (i == j) {
           value[z] = 1;
         } else {

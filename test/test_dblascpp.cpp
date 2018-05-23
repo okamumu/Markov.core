@@ -182,36 +182,42 @@ void test_copy() {
   }
 }
 
-// void test_plus() {
-//   double a[SIZE];
-//   double b[SIZE];
-//   double c[SIZE];
-//   random_vector(SIZE, a);
-//   random_vector(SIZE, b);
-//   random_vector(SIZE, c);
-//
-//   vector va(SIZE, a);
-//   vector vb(SIZE, b);
-//   vector vc(SIZE, c);
-//   dcopy(va, vc);
-//   print(va);
-//
-//   dplusa(va, 10.0);
-//   print(va);
-//   for (int i=0; i<SIZE; i++) {
-//     c[i] += 10;
-//   }
-//   print(vc);
-//   std::cout << check_equal("plus a", SIZE, c, 1, a, 1) << std::endl;
-//
-//   dmulti(va, vb);
-//   print(va);
-//   for (int i=0; i<SIZE; i++) {
-//     c[i] *= b[i];
-//   }
-//   print(vc);
-//   std::cout << check_equal("multi", SIZE, c, 1, a, 1) << std::endl;
-// }
+void test_plus() {
+  double a[SIZE];
+  double b[SIZE];
+  double c[SIZE];
+  random_vector(SIZE, a);
+  random_vector(SIZE, b);
+  random_vector(SIZE, c);
+
+  vector va(SIZE, a);
+  vector vb(SIZE, b);
+  vector vc(SIZE, c);
+  dcopy(va, vc);
+  print(va);
+
+  mapapply(va, [](double& value) { value += 10.0; });
+  print(va);
+  for (int i=0; i<SIZE; i++) {
+    c[i] += 10;
+  }
+  print(vc);
+  std::cout << check_equal("plus a", SIZE, c, 1, a, 1) << std::endl;
+
+  mapapply(va, [vb](int i, double& value) { value *= vb[i]; });
+  print(va);
+  for (int i=0; i<SIZE; i++) {
+    c[i] *= b[i];
+  }
+  print(vc);
+  std::cout << check_equal("multi", SIZE, c, 1, a, 1) << std::endl;
+
+  double sum = 0;
+  mapapply(va, [&](double value) { sum += value; });
+  print(va);
+  std::cout << sum << std::endl;
+}
+
 //
 // void test_plus_csrN() {
 //   double a[SIZE];
@@ -772,8 +778,8 @@ void test_copy() {
 
 int main() {
   test_copy();
+  test_plus();
 
-  // test_plus();
   // test_plus_csrN();
   // test_plus_csrT();
   // test_plus_cscN();
